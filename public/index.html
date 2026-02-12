@@ -641,10 +641,19 @@
     function getRankName(r) { if(r==null)return '三段'; for(let i of RANK_RULES){if(r>=i.min)return i.name;} return '三段'; }
     const RATING_TABLE = [{limit:12,normal:16,upset:16},{limit:37,normal:15,upset:17},{limit:62,normal:14,upset:18},{limit:87,normal:13,upset:19},{limit:112,normal:12,upset:20},{limit:137,normal:11,upset:21},{limit:162,normal:10,upset:22},{limit:187,normal:9,upset:23},{limit:212,normal:8,upset:24},{limit:237,normal:7,upset:25},{limit:262,normal:6,upset:26},{limit:287,normal:5,upset:27},{limit:312,normal:4,upset:28},{limit:337,normal:3,upset:29},{limit:362,normal:2,upset:30},{limit:9999,normal:1,upset:31}];
 
-    const firebaseConfig = { apiKey: "AIzaSyAmUxvxGOBRJnJsXM-pMGaCCD6Pxl2eCng", authDomain: "yonagoshogi.firebaseapp.com", projectId: "yonagoshogi", storageBucket: "yonagoshogi.firebasestorage.app", messagingSenderId: "1021447668509", appId: "1:1021447668509:web:dfccb139987acef34717f4", measurementId: "G-6H2NV84NHE" };
+    const firebaseConfig = {
+        apiKey: "AIzaSyCB7Trj0gNu6T4jXtyBAYuuF7Af-8PBrF4",
+        authDomain: "yonagoshogi-test.firebaseapp.com",
+        projectId: "yonagoshogi-test",
+        storageBucket: "yonagoshogi-test.firebasestorage.app",
+        messagingSenderId: "286913316536",
+        appId: "1:286913316536:web:011cb285cfa202cb49564d",
+        databaseURL: "https://yonagoshogi-test-default-rtdb.firebaseio.com/"
+    };
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const db = getDatabase(app, firebaseConfig.databaseURL);
     const auth = getAuth(app);
+
 
     let currentUser = null, userData = null, isRegisterMode = false;
     const DUMMY_DOMAIN = "@yonago.local";
@@ -1463,4 +1472,5 @@
 
 </script>
 </body>
+
 </html>
