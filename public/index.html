@@ -1210,19 +1210,40 @@
                 }
 
                 if(!myD||!opD) return;
-                const win = (myRole===winner);
-                const myR = myD.rating||1500, opR = opD.rating||1500;
-                const diff = Math.abs(myR-opR);
-                let entry = RATING_TABLE.find(r=>diff<=r.limit) || RATING_TABLE[RATING_TABLE.length-1];
-                let pt = 0;
-                if(win) pt = (myR>=opR) ? entry.normal : entry.upset;
-                else pt = (opR>=myR) ? -entry.normal : -entry.upset;
+
+                // ★追加：settings.isRated を確認して、レート対象外ならここで終了
+                get(ref(db, 'matches/'+currentRoomId+'/settings')).then(s2 => {
+                    const set2 = s2.val();
+                    const isRated = !(set2 && set2.isRated === false); // 未設定はレート対象(true)
                 
-                const newR = myR + pt;
-                const curM = userData.maxRating||1500;
-                const newM = (newR>curM) ? newR : curM;
-                update(ref(db, 'users/'+currentUser.uid), { rating:newR, maxRating:newM, wins:(userData.wins||0)+(win?1:0), losses:(userData.losses||0)+(win?0:1) })
-                .then(()=>{ userData.rating=newR; userData.maxRating=newM; userData.wins+=(win?1:0); userData.losses+=(win?0:1); alert(`レート: ${myR}->${newR} (${pt>=0?"+":""}${pt})`); });
+                    if(!isRated){
+                        alert("この対局はレート対象外です（レート・戦績は変動しません）");
+                        return;
+                    }
+                
+                    // ▼ここから下は、元のレート計算処理をそのまま
+                    const win = (myRole===winner);
+                    const myR = myD.rating||1500, opR = opD.rating||1500;
+                    const diff = Math.abs(myR-opR);
+                    let entry = RATING_TABLE.find(r=>diff<=r.limit) || RATING_TABLE[RATING_TABLE.length-1];
+                    let pt = 0;
+                    if(win) pt = (myR>=opR) ? entry.normal : entry.upset;
+                    else pt = (opR>=myR) ? -entry.normal : -entry.upset;
+                
+                    const newR = myR + pt;
+                    const curM = userData.maxRating||1500;
+                    const newM = (newR>curM) ? newR : curM;
+                
+                    update(ref(db, 'users/'+currentUser.uid), {
+                        rating:newR, maxRating:newM,
+                        wins:(userData.wins||0)+(win?1:0),
+                        losses:(userData.losses||0)+(win?0:1)
+                    }).then(()=>{
+                        userData.rating=newR; userData.maxRating=newM;
+                        userData.wins+=(win?1:0); userData.losses+=(win?0:1);
+                        alert(`レート: ${myR}->${newR} (${pt>=0?"+":""}${pt})`);
+                    });
+                });
             });
         }
     }
@@ -1474,3 +1495,4 @@
 </body>
 
 </html>
+
