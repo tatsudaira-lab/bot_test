@@ -1,0 +1,1492 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Yuji+Syuku&display=swap" rel="stylesheet">
+  <title>将棋盤メーカー</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+      margin: 16px;
+      background: #e4f0c5;
+      color: #333;
+    }
+
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      padding: 12px;
+      background: rgba(255,255,255,0.65);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    input[type="number"], input[type="text"], select {
+      width: 12em;
+    }
+
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid #ddd; padding: 6px 8px; vertical-align: top; }
+    th { background: #f7f7f7; }
+
+    .muted { color:#666; font-size: 0.92em; }
+    .ok { font-weight: 700; }
+    .bad { color:#a00; font-weight: 700; }
+    .good { color:#0a0; font-weight: 700; }
+
+    pre {
+      background:#fafafa;
+      border:1px solid #eee;
+      padding:10px;
+      border-radius: 8px;
+      overflow:auto;
+    }
+
+    .pill {
+      display:inline-block;
+      padding:2px 8px;
+      border:1px solid #ddd;
+      border-radius:999px;
+      margin-right:6px;
+      font-size:.9em;
+      background:#fafafa;
+    }
+
+    .big { font-size: 1.8em; letter-spacing: .2em; }
+
+    .grid2 {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+    }
+
+    @media (max-width: 900px) {
+      .grid2 { grid-template-columns: 1fr; }
+    }
+
+    .maker-board-wrap { margin-top: 12px; }
+
+    .maker-board-title {
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .maker-board {
+      display: grid;
+      grid-template-columns: repeat(5, 56px);
+      grid-template-rows: repeat(4, 64px);
+      width: max-content;
+      border: 2px solid #000;
+      background-color: #deb06d;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .maker-cell {
+      width: 56px;
+      height: 64px;
+      border: 0.5px solid #555;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: transparent;
+    }
+
+    .maker-piece {
+      position: relative;
+      width: 48px;
+      height: 56px;
+    }
+
+    .maker-piece img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: contain;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .maker-char {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      font-weight: 700;
+      line-height: 1;
+      color: #111;
+      user-select: none;
+      pointer-events: none;
+      text-align: center;
+      font-family: "Yuji Syuku", "Noto Serif JP", serif;
+      white-space: nowrap;
+    }
+
+    .maker-piece.gote {
+      transform: rotate(180deg);
+    }
+
+    .maker-board-note {
+      margin-top: 8px;
+      color: #666;
+      font-size: 0.92em;
+    }
+
+    button {
+      padding: 8px 14px;
+      border: 1px solid #999;
+      border-radius: 8px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    .top-actions {
+      margin-bottom: 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .top-actions a {
+      text-decoration: none;
+      color: inherit;
+    }
+  </style>
+</head>
+<body>
+  <div class="top-actions">
+    <a href="./"><button type="button">サイトへ戻る</button></a>
+  </div>
+
+  <h2>将棋盤メーカー</h2>
+
+  <div class="row card">
+    <div>
+      <div class="ok">対象ユーザー</div>
+      <div id="targetUserInfo" class="muted">確認中...</div>
+    </div>
+
+    <div>
+      <label>取得局数:
+        <input id="gameLimit" type="number" min="1" max="100" value="20">
+      </label>
+      <div class="muted">records から新しい順に取得</div>
+    </div>
+
+    <div>
+      <label>走査手数（最大）:
+        <input id="maxPly" type="number" min="1" max="400" value="80">
+      </label>
+      <div class="muted">囲い・特徴抽出はこの範囲で評価</div>
+    </div>
+
+    <div>
+      <label>走査開始手:
+        <input id="minPly" type="number" min="1" max="400" value="1">
+      </label>
+      <div class="muted">序盤だけに絞りたい場合</div>
+    </div>
+
+    <div>
+      <button id="run">解析</button>
+    </div>
+  </div>
+
+  <div class="card maker-board-wrap">
+    <div class="maker-board-title">囲い表示プロトタイプ（4行×5列）</div>
+    <div id="makerBoard" class="maker-board"></div>
+    <div class="maker-board-note">
+      囲いの番地は固定で、検出文字をその位置に流し込んで表示します。雁木のみ12マスのため、12文字目は必要数まで補完します。
+    </div>
+  </div>
+
+  <div id="out" class="card" style="margin-top:12px;">
+    <div class="muted">「解析」を押してください。</div>
+  </div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
+  import { getDatabase, ref, get, query, limitToLast } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCB7Trj0gNu6T4jXtyBAYuuF7Af-8PBrF4",
+    authDomain: "yonagoshogi-test.firebaseapp.com",
+    projectId: "yonagoshogi-test",
+    storageBucket: "yonagoshogi-test.firebasestorage.app",
+    messagingSenderId: "286913316536",
+    appId: "1:286913316536:web:011cb285cfa202cb49564d",
+    databaseURL: "https://yonagoshogi-test-default-rtdb.firebaseio.com/"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app, firebaseConfig.databaseURL);
+  const auth = getAuth(app);
+
+  const $ = (id) => document.getElementById(id);
+
+  const SENTE = 0, GOTE = 1;
+  let currentUser = null;
+  let resolvedTarget = { uid: "", name: "" };
+
+  const IMG_BASE_URL = "./images/maker/";
+  const IMG_EXT = ".png";
+  const PIECE_IMG_MAP = {
+    '歩':'sfu',
+    '香':'sky',
+    '桂':'ske',
+    '銀':'sgi',
+    '金':'ski',
+    '角':'ska',
+    '玉':'sgy'
+  };
+
+  const TEMPLATES = [
+    {
+      id: "yagura",
+      name: "矢倉",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 12, strong: 16 },
+      core: [
+        { p:"銀", x:7, y:7 }, { p:"金", x:7, y:8 }, { p:"桂", x:8, y:9 }, { p:"香", x:9, y:9 },
+      ],
+      sub: [
+        { p:"歩", x:6, y:6 }, { p:"歩", x:8, y:7 }, { p:"金", x:6, y:7 }, { p:"角", x:6, y:8 },
+      ],
+      assist: [
+        { p:"玉", x:8, y:8 }, { p:"歩", x:9, y:6 }, { p:"歩", x:7, y:6 },
+      ],
+    },
+    {
+      id: "gangi",
+      name: "雁木",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 13, strong: 17 },
+      core: [
+        { p:"歩", x:5, y:6 }, { p:"銀", x:5, y:7 }, { p:"銀", x:6, y:7 }, { p:"金", x:5, y:8 },
+      ],
+      sub: [
+        { p:"桂", x:8, y:9 }, { p:"香", x:9, y:9 }, { p:"金", x:7, y:8 }, { p:"歩", x:6, y:6 },
+      ],
+      assist: [
+        { p:"歩", x:8, y:7 }, { p:"玉", x:6, y:9 }, { p:"歩", x:9, y:6 }, { p:"歩", x:7, y:6 },
+      ],
+    },
+    {
+      id: "ibisha_anaguma",
+      name: "居飛穴",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 12, strong: 16 },
+      core: [
+        { p:"香", x:9, y:8 }, { p:"銀", x:8, y:8 }, { p:"桂", x:8, y:9 }, { p:"歩", x:8, y:7 },
+      ],
+      sub: [
+        { p:"玉", x:9, y:9 }, { p:"歩", x:6, y:6 }, { p:"金", x:7, y:9 }, { p:"角", x:7, y:7 },
+      ],
+      assist: [
+        { p:"歩", x:7, y:6 }, { p:"金", x:7, y:8 }, { p:"歩", x:9, y:6 },
+      ],
+    },
+    {
+      id: "mino",
+      name: "美濃",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 12, strong: 16 },
+      core: [
+        { p:"香", x:1, y:1 }, { p:"銀", x:3, y:8 }, { p:"桂", x:2, y:9 }, { p:"金", x:4, y:9 },
+      ],
+      sub: [
+        { p:"歩", x:1, y:6 }, { p:"歩", x:2, y:7 }, { p:"金", x:5, y:8 }, { p:"玉", x:2, y:8 },
+      ],
+      assist: [
+        { p:"歩", x:3, y:7 }, { p:"歩", x:4, y:7 }, { p:"歩", x:5, y:7 },
+      ],
+    },
+    {
+      id: "anaguma",
+      name: "穴熊",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 12, strong: 16 },
+      core: [
+        { p:"玉", x:1, y:9 }, { p:"香", x:1, y:8 }, { p:"銀", x:2, y:8 }, { p:"歩", x:2, y:7 },
+      ],
+      sub: [
+        { p:"桂", x:2, y:9 }, { p:"歩", x:1, y:7 }, { p:"金", x:3, y:9 }, { p:"金", x:3, y:8 },
+      ],
+      assist: [
+        { p:"金", x:4, y:8 }, { p:"歩", x:3, y:7 }, { p:"歩", x:4, y:7 },
+      ],
+    },
+    {
+      id: "hidari_mino",
+      name: "左美濃",
+      weights: { core: 3, sub: 2, assist: 1 },
+      thresholds: { established: 12, strong: 16 },
+      core: [
+        { p:"銀", x:7, y:8 }, { p:"金", x:6, y:9 }, { p:"香", x:9, y:9 }, { p:"桂", x:8, y:9 },
+      ],
+      sub: [
+        { p:"歩", x:8, y:7 }, { p:"歩", x:9, y:6 }, { p:"角", x:7, y:7 }, { p:"玉", x:8, y:8 },
+      ],
+      assist: [
+        { p:"歩", x:7, y:6 }, { p:"金", x:5, y:8 }, { p:"歩", x:8, y:6 },
+      ],
+    },
+  ];
+  const TEMPLATE_ORDER = new Map(TEMPLATES.map((t,i)=>[t.id,i]));
+
+  const MINI_CASTLE_LAYOUTS = {
+    hidari_mino: [
+      { row: 0, col: 0, side: SENTE, p:"歩" },
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 0, col: 2, side: SENTE, p:"歩" },
+      { row: 3, col: 0, side: SENTE, p:"香" },
+      { row: 2, col: 1, side: SENTE, p:"玉" },
+      { row: 3, col: 1, side: SENTE, p:"桂" },
+      { row: 1, col: 2, side: SENTE, p:"角" },
+      { row: 2, col: 2, side: SENTE, p:"銀" },
+      { row: 0, col: 3, side: SENTE, p:"歩" },
+      { row: 1, col: 3, side: SENTE, p:"金" },
+      { row: 3, col: 3, side: SENTE, p:"金" },
+    ],
+
+    yagura: [
+      { row: 0, col: 0, side: SENTE, p:"歩" },
+      { row: 3, col: 0, side: SENTE, p:"香" },
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 2, col: 1, side: SENTE, p:"玉" },
+      { row: 3, col: 1, side: SENTE, p:"桂" },
+      { row: 0, col: 2, side: SENTE, p:"歩" },
+      { row: 1, col: 2, side: SENTE, p:"銀" },
+      { row: 2, col: 2, side: SENTE, p:"金" },
+      { row: 0, col: 3, side: SENTE, p:"歩" },
+      { row: 1, col: 3, side: SENTE, p:"金" },
+      { row: 2, col: 3, side: SENTE, p:"角" },
+    ],
+
+    gangi: [
+      { row: 0, col: 0, side: SENTE, p:"歩" },
+      { row: 3, col: 0, side: SENTE, p:"香" },
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 3, col: 1, side: SENTE, p:"桂" },
+      { row: 0, col: 2, side: SENTE, p:"歩" },
+      { row: 2, col: 2, side: SENTE, p:"金" },
+      { row: 0, col: 3, side: SENTE, p:"歩" },
+      { row: 1, col: 3, side: SENTE, p:"銀" },
+      { row: 3, col: 3, side: SENTE, p:"玉" },
+      { row: 0, col: 4, side: SENTE, p:"歩" },
+      { row: 1, col: 4, side: SENTE, p:"銀" },
+      { row: 2, col: 4, side: SENTE, p:"金" },
+    ],
+
+    ibisha_anaguma: [
+      { row: 1, col: 0, side: SENTE, p:"歩" },
+      { row: 2, col: 0, side: SENTE, p:"金" },
+      { row: 3, col: 0, side: SENTE, p:"香" },
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 2, col: 1, side: SENTE, p:"銀" },
+      { row: 3, col: 1, side: SENTE, p:"桂" },
+      { row: 0, col: 2, side: SENTE, p:"歩" },
+      { row: 1, col: 2, side: SENTE, p:"角" },
+      { row: 3, col: 2, side: SENTE, p:"玉" },
+      { row: 0, col: 3, side: SENTE, p:"歩" },
+      { row: 1, col: 3, side: SENTE, p:"金" },
+    ],
+
+    mino: [
+      { row: 1, col: 0, side: SENTE, p:"歩" },
+      { row: 2, col: 0, side: SENTE, p:"金" },
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 3, col: 1, side: SENTE, p:"金" },
+      { row: 1, col: 2, side: SENTE, p:"歩" },
+      { row: 2, col: 2, side: SENTE, p:"銀" },
+      { row: 1, col: 3, side: SENTE, p:"歩" },
+      { row: 2, col: 3, side: SENTE, p:"玉" },
+      { row: 3, col: 3, side: SENTE, p:"桂" },
+      { row: 0, col: 4, side: SENTE, p:"歩" },
+      { row: 3, col: 4, side: SENTE, p:"香" },
+    ],
+
+    anaguma: [
+      { row: 1, col: 1, side: SENTE, p:"歩" },
+      { row: 2, col: 1, side: SENTE, p:"銀" },
+      { row: 1, col: 2, side: SENTE, p:"歩" },
+      { row: 2, col: 2, side: SENTE, p:"金" },
+      { row: 3, col: 2, side: SENTE, p:"玉" },
+      { row: 1, col: 3, side: SENTE, p:"歩" },
+      { row: 2, col: 3, side: SENTE, p:"金" },
+      { row: 3, col: 3, side: SENTE, p:"桂" },
+      { row: 1, col: 4, side: SENTE, p:"歩" },
+      { row: 2, col: 4, side: SENTE, p:"香" },
+      { row: 3, col: 4, side: SENTE, p:"香" },
+    ]
+  };
+
+  const PROMOTE_MAP = new Map([["歩","と"], ["香","杏"], ["桂","圭"], ["銀","全"], ["角","馬"], ["飛","龍"]]);
+  const UNPROMOTE_MAP = new Map([["と","歩"], ["杏","香"], ["圭","桂"], ["全","銀"], ["馬","角"], ["龍","飛"], ["竜","飛"]]);
+
+  function normalizePiece(p) {
+    if (p === "王") return "玉";
+    if (p === "竜") return "龍";
+    return p;
+  }
+  function unpromote(p) { p = normalizePiece(p); return UNPROMOTE_MAP.get(p) || p; }
+  function promote(p) { p = normalizePiece(p); return PROMOTE_MAP.get(p) || p; }
+
+  function getMakerCharColor(ch) {
+    const map = {
+      "攻": "#d22",
+      "守": "#2276d2",
+      "形": "#708090",
+      "居": "#2f4f4f",
+      "振": "#9c27b0",
+      "急": "#e85c00",
+      "捌": "#008060",
+      "静": "#00ced1",
+      "普": "#8b4513",
+      "奇": "#e91e63",
+      "遊": "#ff9800",
+      "執": "#4b0082",
+      "偏": "#1e90ff",
+      "迷": "#bdb76b",
+      "中": "#6a5acd",
+      "四": "#6a5acd",
+      "三": "#6a5acd",
+      "向": "#6a5acd",
+      "悩": "#795548",
+      "早": "#009688",
+      "熱": "#f44336"
+    };
+    return map[ch] || "#111";
+  }
+
+  function makeInitialBoardWithIds() {
+    const b = Array.from({length:9}, () => Array.from({length:9}, () => null));
+    let nextId = 1;
+    const put = (side, p, x, y) => { b[y-1][x-1] = { side, p, id: nextId++ }; };
+
+    put(SENTE,"香",1,9); put(SENTE,"桂",2,9); put(SENTE,"銀",3,9); put(SENTE,"金",4,9); put(SENTE,"玉",5,9); put(SENTE,"金",6,9); put(SENTE,"銀",7,9); put(SENTE,"桂",8,9); put(SENTE,"香",9,9);
+    put(SENTE,"飛",2,8); put(SENTE,"角",8,8);
+    for (let x=1;x<=9;x++) put(SENTE,"歩",x,7);
+
+    put(GOTE,"香",1,1); put(GOTE,"桂",2,1); put(GOTE,"銀",3,1); put(GOTE,"金",4,1); put(GOTE,"玉",5,1); put(GOTE,"金",6,1); put(GOTE,"銀",7,1); put(GOTE,"桂",8,1); put(GOTE,"香",9,1);
+    put(GOTE,"飛",8,2); put(GOTE,"角",2,2);
+    for (let x=1;x<=9;x++) put(GOTE,"歩",x,3);
+
+    return { board: b, nextId };
+  }
+
+  function mirrorCoord(x, y) { return { x: 10 - x, y: 10 - y }; }
+  function boardGet(board, x, y) { return board[y-1][x-1]; }
+  function boardSet(board, x, y, v) { board[y-1][x-1] = v; }
+
+  function emptyHands() { return [ new Map(), new Map() ]; }
+  function addHand(hands, side, p) {
+    p = unpromote(normalizePiece(p));
+    hands[side].set(p, (hands[side].get(p) || 0) + 1);
+  }
+  function removeHand(hands, side, p) {
+    p = unpromote(normalizePiece(p));
+    const n = hands[side].get(p) || 0;
+    if (n <= 0) return false;
+    if (n === 1) hands[side].delete(p);
+    else hands[side].set(p, n - 1);
+    return true;
+  }
+
+  function makeMiniBoard(rows = 4, cols = 5) {
+    return Array.from({ length: rows }, () => Array.from({ length: cols }, () => null));
+  }
+
+  function setMiniPiece(board, row, col, textChar, side = SENTE, basePiece = "歩") {
+    if (!board[row] || typeof board[row][col] === "undefined") return;
+    board[row][col] = { p: textChar, side, base: normalizePiece(basePiece) };
+  }
+
+  function getMakerCharAdjust(basePiece) {
+    const p = normalizePiece(basePiece || "歩");
+    const map = {
+      "歩": { fontSize: "24px", tx: "-48%", ty: "-40%" },
+      "香": { fontSize: "25px", tx: "-50%", ty: "-48%" },
+      "桂": { fontSize: "25px", tx: "-52%", ty: "-48%" },
+      "銀": { fontSize: "26px", tx: "-50%", ty: "-50%" },
+      "金": { fontSize: "26px", tx: "-50%", ty: "-50%" },
+      "角": { fontSize: "28px", tx: "-48%", ty: "-52%" },
+      "玉": { fontSize: "28px", tx: "-50%", ty: "-52%" }
+    };
+    return map[p] || map["歩"];
+  }
+
+  function renderMiniBoard(board) {
+    const el = $("makerBoard");
+    el.innerHTML = "";
+
+    for (let r = 0; r < board.length; r++) {
+      for (let c = 0; c < board[r].length; c++) {
+        const cell = document.createElement("div");
+        cell.className = "maker-cell";
+
+        const piece = board[r][c];
+        if (piece) {
+          const wrap = document.createElement("div");
+          wrap.className = "maker-piece" + (piece.side === GOTE ? " gote" : "");
+
+          const img = document.createElement("img");
+          const base = normalizePiece(piece.base || "歩");
+          const imgStem = PIECE_IMG_MAP[base] || PIECE_IMG_MAP["歩"];
+          img.src = IMG_BASE_URL + imgStem + IMG_EXT;
+          img.alt = "";
+
+          const char = document.createElement("div");
+          char.className = "maker-char";
+          char.textContent = piece.p;
+
+          const adj = getMakerCharAdjust(base);
+          char.style.fontSize = adj.fontSize;
+          char.style.transform = `translate(${adj.tx}, ${adj.ty})`;
+          char.style.color = getMakerCharColor(piece.p);
+
+          wrap.appendChild(img);
+          wrap.appendChild(char);
+          cell.appendChild(wrap);
+        }
+
+        el.appendChild(cell);
+      }
+    }
+  }
+
+  function getDisplayCharsForCastle(castleId, detectedText) {
+    const baseChars = Array.from((detectedText || "").replace(/\s+/g, ""));
+    if (baseChars.length === 0) {
+      return castleId === "gangi"
+        ? ["攻","攻","攻","守","守","守","居","普","静","形","捌","捌"]
+        : ["攻","攻","攻","守","守","居","普","静","形","捌","急"];
+    }
+
+    if (castleId === "gangi") {
+      const chars12 = baseChars.slice(0, 12);
+      while (chars12.length < 12) {
+        chars12.push(chars12[chars12.length - 1] || "普");
+      }
+      return chars12;
+    }
+
+    const chars11 = baseChars.slice(0, 11);
+    while (chars11.length < 11) {
+      chars11.push(chars11[chars11.length - 1] || "普");
+    }
+    return chars11;
+  }
+
+  function forceStyleCharToKingSquare(castleId, chars) {
+    const layout = MINI_CASTLE_LAYOUTS[castleId] || MINI_CASTLE_LAYOUTS["yagura"];
+    const out = chars.slice();
+
+    const kingIndex = layout.findIndex(cell => normalizePiece(cell.p) === "玉");
+    if (kingIndex < 0) return out;
+
+    const styleIndex = out.findIndex(ch => ch === "居" || ch === "振");
+    if (styleIndex < 0) return out;
+    if (styleIndex === kingIndex) return out;
+
+    const tmp = out[kingIndex];
+    out[kingIndex] = out[styleIndex];
+    out[styleIndex] = tmp;
+    return out;
+  }
+
+  function renderCastleMiniBoard(castleId, detectedText = "") {
+    const b = makeMiniBoard(4, 5);
+    const layout = MINI_CASTLE_LAYOUTS[castleId] || MINI_CASTLE_LAYOUTS["yagura"];
+
+    let chars = getDisplayCharsForCastle(castleId, detectedText);
+    chars = forceStyleCharToKingSquare(castleId, chars);
+
+    for (let i = 0; i < layout.length; i++) {
+      const cell = layout[i];
+      const ch = chars[i] || "普";
+      const basePiece = cell.p || "歩";
+      setMiniPiece(b, cell.row, cell.col, ch, cell.side, basePiece);
+    }
+
+    renderMiniBoard(b);
+  }
+
+  function pieceAtForSide(board, side, x, y) {
+    const cell = boardGet(board, x, y);
+    if (!cell || cell.side !== side) return null;
+    return normalizePiece(cell.p);
+  }
+
+  function countMatches(board, side, items, mirror=false) {
+    let hit = 0;
+    for (const it of items) {
+      const c = mirror ? mirrorCoord(it.x, it.y) : {x:it.x, y:it.y};
+      const got = pieceAtForSide(board, side, c.x, c.y);
+      const want = normalizePiece(it.p);
+      if (got === want) hit++;
+    }
+    return hit;
+  }
+
+  function scoreTemplate(board, side, tmpl) {
+    const mirror = (side === GOTE);
+    const coreHit = countMatches(board, side, tmpl.core, mirror);
+    const subHit = countMatches(board, side, tmpl.sub, mirror);
+    const assistHit = countMatches(board, side, tmpl.assist, mirror);
+
+    const score = coreHit*tmpl.weights.core + subHit*tmpl.weights.sub + assistHit*tmpl.weights.assist;
+    const stage =
+      (score >= tmpl.thresholds.strong) ? "強い" :
+      (score >= tmpl.thresholds.established) ? "成立" :
+      "未成立";
+
+    const maxScore =
+      tmpl.core.length*tmpl.weights.core + tmpl.sub.length*tmpl.weights.sub + tmpl.assist.length*tmpl.weights.assist;
+
+    return { tmplId: tmpl.id, tmplName: tmpl.name, score, stage, maxScore };
+  }
+
+  function bestCastle(board, side) {
+    let best = null;
+    for (const tmpl of TEMPLATES) {
+      const r = scoreTemplate(board, side, tmpl);
+      if (!best) { best = r; continue; }
+      if (r.score > best.score) best = r;
+      else if (r.score === best.score) {
+        if ((TEMPLATE_ORDER.get(r.tmplId) ?? 999) < (TEMPLATE_ORDER.get(best.tmplId) ?? 999)) best = r;
+      }
+    }
+    return best;
+  }
+
+  function pickFavoriteCastleAlways(perGameCastles) {
+    const agg = new Map();
+    for (const g of perGameCastles) {
+      const r = g?.best?.res;
+      if (!r) continue;
+      const cur = agg.get(r.tmplId) || { name:r.tmplName, count:0, scoreSum:0, strongCnt:0 };
+      cur.count += 1;
+      cur.scoreSum += r.score;
+      if (r.stage === "強い") cur.strongCnt += 1;
+      agg.set(r.tmplId, cur);
+    }
+    if (agg.size === 0) {
+      const t0 = TEMPLATES[0];
+      return { favorite: { id:t0.id, name:t0.name, count:0, avgScore:0, strongCnt:0 }, agg };
+    }
+
+    let best = null;
+    for (const [id, v] of agg.entries()) {
+      const avg = v.count ? (v.scoreSum / v.count) : 0;
+      const cand = { id, name:v.name, count:v.count, avgScore:avg, strongCnt:v.strongCnt, order: TEMPLATE_ORDER.get(id) ?? 999 };
+      if (!best) { best = cand; continue; }
+      if (cand.count > best.count) { best = cand; continue; }
+      if (cand.count < best.count) continue;
+      if (cand.avgScore > best.avgScore) { best = cand; continue; }
+      if (cand.avgScore < best.avgScore) continue;
+      if (cand.strongCnt > best.strongCnt) { best = cand; continue; }
+      if (cand.strongCnt < best.strongCnt) continue;
+      if (cand.order < best.order) { best = cand; continue; }
+    }
+    return { favorite: best, agg };
+  }
+
+  function normalizeCoordForUser(sideUser, x, y) {
+    return (sideUser === GOTE) ? mirrorCoord(x, y) : { x, y };
+  }
+
+  function findRook(board, side) {
+    for (let y=1;y<=9;y++) {
+      for (let x=1;x<=9;x++) {
+        const c = boardGet(board, x, y);
+        if (c && c.side === side && normalizePiece(c.p) === "飛") return { x, y };
+      }
+    }
+    return null;
+  }
+
+  function applyMoveAndCollect(state, mv, collector) {
+    const side = (mv.ply % 2 === 1) ? SENTE : GOTE;
+    if (mv.type !== "move") return state;
+
+    let to = mv.to;
+    if (to.same) {
+      if (!state.lastTo) return state;
+      to = { x: state.lastTo.x, y: state.lastTo.y };
+    }
+
+    const dstBefore = boardGet(state.board, to.x, to.y);
+    const isCapture = !!(dstBefore && dstBefore.side !== side);
+
+    if (isCapture) addHand(state.hands, side, dstBefore.p);
+
+    if (mv.isDrop) {
+      if (!removeHand(state.hands, side, mv.piece)) {
+        state.lastTo = { x: to.x, y: to.y };
+        return state;
+      }
+      boardSet(state.board, to.x, to.y, { side, p: mv.piece, id: state.nextId++ });
+    } else {
+      const from = mv.origin;
+      if (!from) {
+        state.lastTo = { x: to.x, y: to.y };
+        return state;
+      }
+      const src = boardGet(state.board, from.x, from.y);
+      if (!src || src.side !== side) {
+        state.lastTo = { x: to.x, y: to.y };
+        return state;
+      }
+
+      const movedId = src.id;
+      let movedPiece = src.p;
+      boardSet(state.board, from.x, from.y, null);
+      if (mv.isPromote) movedPiece = promote(movedPiece);
+      boardSet(state.board, to.x, to.y, { side, p: movedPiece, id: movedId });
+    }
+
+    state.lastTo = { x: to.x, y: to.y };
+
+    if (!collector) return state;
+    const sideUser = collector.sideUser;
+    const inWindow = (mv.ply >= collector.minPly && mv.ply <= collector.maxPly);
+    const isUserMove = (side === sideUser);
+
+    if (isUserMove && inWindow) {
+      collector.totalUserMoves += 1;
+
+      const norm = normalizeCoordForUser(sideUser, to.x, to.y);
+
+      if (norm.y >= 1 && norm.y <= 4) collector.atkMoves += 1;
+      if (norm.y >= 7 && norm.y <= 9) collector.defMoves += 1;
+
+      if (norm.x >= 1 && norm.x <= 3) collector.leftMoves += 1;
+      if (norm.x >= 7 && norm.x <= 9) collector.rightMoves += 1;
+
+      if (isCapture) {
+        collector.captureMoves += 1;
+        if (collector.firstCapturePly === null) collector.firstCapturePly = mv.ply;
+      }
+
+      if (mv.timeSec !== null && Number.isFinite(mv.timeSec)) {
+        collector.hasTime = true;
+        collector.totalThinkSec += mv.timeSec;
+        collector.thinkCount += 1;
+        if (mv.timeSec >= collector.T_LONG) collector.longThinkCount += 1;
+      }
+
+      if (collector.totalUserMoves <= collector.T_EDGE_EARLY) {
+        const movedToEdgePawn = (mv.piece === "歩" && ((norm.x === 9 && norm.y === 6) || (norm.x === 1 && norm.y === 6)));
+        if (movedToEdgePawn) collector.edgePawnEarly = true;
+      }
+
+      if (collector.totalUserMoves <= 8 && (mv.piece === "玉" || mv.piece === "王")) {
+        collector.oddEventCount += 1;
+      }
+      if (collector.totalUserMoves <= 12 && mv.piece === "歩" && norm.x === 8 && norm.y === 6) {
+        collector.oddEventCount += 1;
+      }
+
+      const movedCell = boardGet(state.board, to.x, to.y);
+      if (movedCell && movedCell.side === sideUser) {
+        const movedId = movedCell.id;
+        if (collector.last3MovedIds.includes(movedId)) collector.repeatCount += 1;
+        collector.last3MovedIds.unshift(movedId);
+        collector.last3MovedIds = collector.last3MovedIds.slice(0, 3);
+      }
+
+      if (collector.totalUserMoves <= collector.N_OPENING_USERMOVES) {
+        const rookPos = findRook(state.board, sideUser);
+        if (rookPos) {
+          const rookNorm = normalizeCoordForUser(sideUser, rookPos.x, rookPos.y);
+          collector.rookFileVisits.set(rookNorm.x, (collector.rookFileVisits.get(rookNorm.x)||0)+1);
+          if (rookNorm.x >= 5 && rookNorm.x <= 8) {
+            collector.rookMovedHoriz = true;
+          }
+        }
+      }
+    }
+
+    return state;
+  }
+
+  function analyzeCastleForCommonGame(game, side, minPly, maxPly) {
+    const moves = (game.moves || []).filter(m => m.type === "move");
+    const init = makeInitialBoardWithIds();
+    const state = { board: init.board, nextId: init.nextId, hands: emptyHands(), lastTo: null };
+
+    const limit = Math.min(maxPly, moves.length);
+    let best = { score:-1, ply:0, res: bestCastle(state.board, side) };
+
+    for (let i=0; i<limit; i++) {
+      const mv = moves[i];
+      applyMoveAndCollect(state, mv, null);
+      const ply = mv.ply;
+      if (ply < minPly) continue;
+
+      const b = bestCastle(state.board, side);
+      if (b.score > best.score) best = { score:b.score, ply, res:b };
+    }
+
+    return { movesCount: moves.length, best };
+  }
+
+  function analyzeGameStatsFromCommonGame(game, sideUser, minPly, maxPly) {
+    const moves = (game.moves || []).filter(m => m.type === "move");
+
+    const init = makeInitialBoardWithIds();
+    const state = { board: init.board, nextId: init.nextId, hands: emptyHands(), lastTo: null };
+
+    const collector = {
+      sideUser,
+      minPly,
+      maxPly,
+      N_OPENING_USERMOVES: 20,
+      T_LONG: 15,
+      T_EDGE_EARLY: 20,
+      totalUserMoves: 0,
+      atkMoves: 0,
+      defMoves: 0,
+      leftMoves: 0,
+      rightMoves: 0,
+      captureMoves: 0,
+      firstCapturePly: null,
+      edgePawnEarly: false,
+      oddEventCount: 0,
+      repeatCount: 0,
+      totalThinkSec: 0,
+      thinkCount: 0,
+      longThinkCount: 0,
+      hasTime: false,
+      rookInitialFileNorm: 2,
+      rookMovedHoriz: false,
+      rookFileVisits: new Map(),
+      last3MovedIds: [],
+      totalMovesInFile: moves.length,
+      bTypeChar: null,
+    };
+
+    const limit = Math.min(maxPly, moves.length);
+    for (let i=0; i<limit; i++) {
+      applyMoveAndCollect(state, moves[i], collector);
+    }
+
+    collector.styleChar = makeStyleChar(collector.rookMovedHoriz);
+    if (collector.styleChar === "振") {
+      collector.bTypeChar = bGroupForShakenbisha(collector.rookFileVisits);
+    }
+
+    return collector;
+  }
+
+  function analyzeSiteResultForUser(game, sideUser) {
+    if (game.winner === null || game.winner === undefined) {
+      return { hasResult:false, userWin:false, winner:null };
+    }
+    return {
+      hasResult: true,
+      userWin: game.winner === sideUser,
+      winner: game.winner
+    };
+  }
+
+  function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+
+  function calcGameAttackBias(attackRate, defenseRate) {
+    const DEFENSE_BIAS = 0.10;
+    let atkRaw = clamp01(attackRate);
+    let defRaw = clamp01(defenseRate);
+    defRaw = Math.max(0, defRaw - DEFENSE_BIAS);
+
+    const sum = atkRaw + defRaw;
+    if (sum <= 0) return 0.5;
+    return atkRaw / sum;
+  }
+
+  function pickRepresentativeAttackBias(perGameStats) {
+    const biases = perGameStats.map(g => {
+      const attackRate = g.totalUserMoves ? (g.atkMoves / g.totalUserMoves) : 0;
+      const defenseRate = g.totalUserMoves ? (g.defMoves / g.totalUserMoves) : 0;
+      return calcGameAttackBias(attackRate, defenseRate);
+    }).sort((a, b) => a - b);
+
+    if (biases.length === 0) return 0.5;
+
+    const center = Math.floor((biases.length - 1) / 2);
+    const pickIndex = Math.min(biases.length - 1, center + 2);
+    return biases[pickIndex];
+  }
+
+  function makeAttackDefenseStringFromBias(attackBias) {
+    const atk = Math.min(5, Math.max(0, Math.round(clamp01(attackBias) * 5)));
+    const def = 5 - atk;
+    return "攻".repeat(atk) + "守".repeat(def);
+  }
+
+  function makeStyleChar(rookMovedHoriz) {
+    return rookMovedHoriz ? "振" : "居";
+  }
+
+  function makeRng(seedU32) {
+    let x = seedU32 >>> 0;
+    return function() {
+      x ^= (x << 13) >>> 0;
+      x ^= (x >>> 17) >>> 0;
+      x ^= (x << 5) >>> 0;
+      return (x >>> 0) / 4294967296;
+    };
+  }
+
+  function hashFNV1a(str) {
+    let h = 0x811c9dc5;
+    for (let i=0;i<str.length;i++) {
+      h ^= str.charCodeAt(i);
+      h = (h * 0x01000193) >>> 0;
+    }
+    return h >>> 0;
+  }
+
+  function pickRandomK(arr, k, rng) {
+    const a = arr.slice();
+    for (let i=a.length-1;i>0;i--) {
+      const j = Math.floor(rng() * (i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a.slice(0, k);
+  }
+
+  function bGroupForShakenbisha(rookFileVisits) {
+    if (!rookFileVisits || rookFileVisits.size === 0) return null;
+    let bestFile = null, bestCnt = -1;
+    for (const [file, cnt] of rookFileVisits.entries()) {
+      if (cnt > bestCnt) { bestCnt = cnt; bestFile = file; }
+    }
+    if (bestFile === null) return null;
+    if (bestFile === 5) return "中";
+    if (bestFile === 4) return "四";
+    if (bestFile === 3) return "三";
+    if (bestFile === 8) return "向";
+    return "中";
+  }
+
+  function buildACandidates(metrics) {
+    const A = [];
+    if (metrics.avgMaxCastleScore >= 12) A.push("形");
+    if (metrics.hasTime && metrics.worryRate >= 0.20) A.push("悩");
+    if (metrics.hasTime && metrics.avgThinkTime <= 5) A.push("早");
+    if (metrics.avgMoveCount >= 120) A.push("熱");
+    if (metrics.captureRate >= 0.15) A.push("捌");
+    if (metrics.firstCaptureAvg !== null && metrics.firstCaptureAvg <= 25) A.push("急");
+    if (metrics.oddEventRate >= 0.20) A.push("奇");
+    if (metrics.edgePawnEarlyRate >= 0.30) A.push("遊");
+    if (metrics.repeatMoveRate >= 0.12) A.push("執");
+    if (Math.max(metrics.leftRate, metrics.rightRate) >= 0.45) A.push("偏");
+    if (metrics.hasResult && metrics.winRate <= 0.30) A.push("迷");
+    return A;
+  }
+
+  function buildFreeChars(metrics, styleChar, seedU32) {
+    const rng = makeRng(seedU32);
+    const A = buildACandidates(metrics);
+    let free = [];
+
+    if (A.length >= 5) return pickRandomK(A, 5, rng);
+
+    free = A.slice();
+
+    if (free.length < 5 && styleChar === "振") {
+      const b = metrics.bTypeChar || "中";
+      if (!free.includes(b)) free.push(b);
+    }
+
+    const cFill = ["普","静"];
+    for (const c of cFill) {
+      if (free.length >= 5) break;
+      free.push(c);
+    }
+    while (free.length < 5) free.push("普");
+    if (free.length > 5) free = pickRandomK(free, 5, rng);
+    return free;
+  }
+
+  function computeAggregatedMetrics(perGameStats, perGameCastles, perGameResults, sideChar) {
+    const n = perGameStats.length;
+    const sum = {
+      totalUserMoves: 0,
+      atkMoves: 0, defMoves: 0,
+      leftMoves: 0, rightMoves: 0,
+      captureMoves: 0,
+      repeatCount: 0,
+      totalThinkSec: 0,
+      thinkCount: 0,
+      longThinkCount: 0,
+      hasTime: false,
+      edgePawnEarlyCount: 0,
+      oddEventCountGames: 0,
+      firstCaptureSum: 0,
+      firstCaptureCnt: 0,
+      moveCountSum: 0,
+      maxCastleScoreSum: 0,
+      winCnt: 0,
+      resCnt: 0,
+    };
+
+    for (const g of perGameStats) {
+      sum.totalUserMoves += g.totalUserMoves;
+      sum.atkMoves += g.atkMoves;
+      sum.defMoves += g.defMoves;
+      sum.leftMoves += g.leftMoves;
+      sum.rightMoves += g.rightMoves;
+      sum.captureMoves += g.captureMoves;
+      sum.repeatCount += g.repeatCount;
+
+      if (g.hasTime) {
+        sum.hasTime = true;
+        sum.totalThinkSec += g.totalThinkSec;
+        sum.thinkCount += g.thinkCount;
+        sum.longThinkCount += g.longThinkCount;
+      }
+
+      if (g.edgePawnEarly) sum.edgePawnEarlyCount += 1;
+      if (g.oddEventCount >= 1) sum.oddEventCountGames += 1;
+
+      if (g.firstCapturePly !== null) {
+        sum.firstCaptureSum += g.firstCapturePly;
+        sum.firstCaptureCnt += 1;
+      }
+
+      sum.moveCountSum += g.totalMovesInFile;
+    }
+
+    for (const c of perGameCastles) {
+      const r = c?.best?.res;
+      sum.maxCastleScoreSum += (r ? r.score : 0);
+    }
+
+    for (const r of perGameResults) {
+      if (r.hasResult) {
+        sum.resCnt += 1;
+        if (r.userWin) sum.winCnt += 1;
+      }
+    }
+
+    const attackRate = sum.totalUserMoves ? (sum.atkMoves / sum.totalUserMoves) : 0;
+    const defenseRate = sum.totalUserMoves ? (sum.defMoves / sum.totalUserMoves) : 0;
+    const leftRate = sum.totalUserMoves ? (sum.leftMoves / sum.totalUserMoves) : 0;
+    const rightRate = sum.totalUserMoves ? (sum.rightMoves / sum.totalUserMoves) : 0;
+    const captureRate = sum.totalUserMoves ? (sum.captureMoves / sum.totalUserMoves) : 0;
+    const repeatMoveRate = sum.totalUserMoves ? (sum.repeatCount / sum.totalUserMoves) : 0;
+    const avgThinkTime = (sum.hasTime && sum.thinkCount) ? (sum.totalThinkSec / sum.thinkCount) : null;
+    const worryRate = (sum.hasTime && sum.thinkCount) ? (sum.longThinkCount / sum.thinkCount) : 0;
+    const firstCaptureAvg = sum.firstCaptureCnt ? (sum.firstCaptureSum / sum.firstCaptureCnt) : null;
+    const edgePawnEarlyRate = n ? (sum.edgePawnEarlyCount / n) : 0;
+    const oddEventRate = n ? (sum.oddEventCountGames / n) : 0;
+    const avgMoveCount = n ? (sum.moveCountSum / n) : 0;
+    const avgMaxCastleScore = n ? (sum.maxCastleScoreSum / n) : 0;
+    const hasResult = (sum.resCnt > 0);
+    const winRate = hasResult ? (sum.winCnt / sum.resCnt) : null;
+
+    let bTypeChar = null;
+    if (sideChar === "振") {
+      const freq = new Map();
+      for (const g of perGameStats) {
+        if (g.bTypeChar) freq.set(g.bTypeChar, (freq.get(g.bTypeChar)||0)+1);
+      }
+      let best = null, bestCnt = -1;
+      for (const [k,v] of freq.entries()) {
+        if (v > bestCnt) { bestCnt = v; best = k; }
+      }
+      bTypeChar = best || "中";
+    }
+
+    return {
+      attackRate, defenseRate,
+      leftRate, rightRate,
+      captureRate,
+      repeatMoveRate,
+      hasTime: sum.hasTime,
+      avgThinkTime: avgThinkTime ?? Infinity,
+      worryRate,
+      firstCaptureAvg,
+      edgePawnEarlyRate,
+      oddEventRate,
+      avgMoveCount,
+      avgMaxCastleScore,
+      hasResult,
+      winRate: winRate ?? 1.0,
+      bTypeChar,
+    };
+  }
+
+  function escapeHtml(s) {
+    return (s ?? "").toString().replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function renderAll(result) {
+    const {
+      targetName, sideMode, favoriteCastle, kanji11, atkDef5, style1, free5, seedU32,
+      metrics, perGameRows, representativeAttackBias, representativeAttackBiasIndex, sortedAttackBiases
+    } = result;
+
+    let html = "";
+    html += `<div class="grid2">`;
+
+    html += `<div class="card">`;
+    html += `<div class="ok">対象ユーザー：<span class="pill">${escapeHtml(targetName || "不明")}</span>　モード：<span class="pill">${escapeHtml(sideMode)}</span></div>`;
+    html += `<div class="muted">seed（再現性用）：${seedU32}</div>`;
+    html += `<hr/>`;
+    html += `<div class="good">得意囲い（必ず1つ）： <span class="pill">${escapeHtml(favoriteCastle.name)}</span></div>`;
+    html += `<div class="muted">票数:${favoriteCastle.count} / 平均スコア:${favoriteCastle.avgScore.toFixed(2)} / 強い回数:${favoriteCastle.strongCnt}</div>`;
+    html += `</div>`;
+
+    html += `<div class="card">`;
+    html += `<div class="ok">11文字（必ず出力）</div>`;
+    html += `<div class="big">${escapeHtml(kanji11)}</div>`;
+    html += `<div class="muted">攻守(5): ${escapeHtml(atkDef5)}　/　戦型(1): ${escapeHtml(style1)}　/　自由(5): ${escapeHtml(free5.join(""))}</div>`;
+    html += `<div class="muted">攻守代表値: ${representativeAttackBias.toFixed(3)}（ソート後 ${representativeAttackBiasIndex + 1} 番目を採用）</div>`;
+    html += `<div class="muted">攻守代表候補一覧: ${escapeHtml(sortedAttackBiases.map(v => v.toFixed(3)).join(", "))}</div>`;
+    html += `</div>`;
+
+    html += `</div>`;
+
+    html += `<h3>自由枠 判定に使った集計値（ざっくり）</h3>`;
+    html += `<table><thead><tr>
+      <th>attackRate</th><th>defenseRate</th><th>captureRate</th><th>repeatMoveRate</th><th>edgePawnEarlyRate</th><th>oddEventRate</th><th>avgMoveCount</th><th>avgMaxCastleScore</th><th>avgThinkTime</th><th>worryRate</th><th>firstCaptureAvg</th><th>winRate</th><th>Bタイプ</th>
+    </tr></thead><tbody><tr>`;
+    html += `<td>${metrics.attackRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.defenseRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.captureRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.repeatMoveRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.edgePawnEarlyRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.oddEventRate.toFixed(3)}</td>`;
+    html += `<td>${metrics.avgMoveCount.toFixed(1)}</td>`;
+    html += `<td>${metrics.avgMaxCastleScore.toFixed(2)}</td>`;
+    html += `<td>${(metrics.hasTime ? metrics.avgThinkTime.toFixed(2) : "N/A")}</td>`;
+    html += `<td>${(metrics.hasTime ? metrics.worryRate.toFixed(3) : "N/A")}</td>`;
+    html += `<td>${(metrics.firstCaptureAvg === null ? "N/A" : metrics.firstCaptureAvg.toFixed(1))}</td>`;
+    html += `<td>${(metrics.hasResult ? metrics.winRate.toFixed(3) : "N/A")}</td>`;
+    html += `<td>${escapeHtml(metrics.bTypeChar || "N/A")}</td>`;
+    html += `</tr></tbody></table>`;
+
+    html += `<h3>棋譜ごとの結果（ユーザー側のみ）</h3>`;
+    html += `<table><thead><tr>
+      <th>#</th><th>対局</th><th>先手</th><th>後手</th><th>採用側</th><th>手数</th><th>囲い(最大)</th><th>攻率</th><th>守率</th><th>攻守Bias</th><th>戦型</th><th>端歩早</th><th>奇</th><th>勝敗</th>
+    </tr></thead><tbody>`;
+
+    perGameRows.forEach((r, idx) => {
+      html += `<tr>
+        <td>${idx+1}</td>
+        <td>${escapeHtml(r.fileName)}</td>
+        <td>${escapeHtml(r.players.sente || "不明")}</td>
+        <td>${escapeHtml(r.players.gote || "不明")}</td>
+        <td>${r.sideUser === SENTE ? "先手" : "後手"}</td>
+        <td>${r.totalMoves}</td>
+        <td>${escapeHtml(r.castleName)}（${r.castleStage} ${r.castleScore}/${r.castleMax}）</td>
+        <td>${r.attackRate.toFixed(2)}</td>
+        <td>${r.defenseRate.toFixed(2)}</td>
+        <td>${r.attackBias.toFixed(3)}</td>
+        <td>${escapeHtml(r.styleChar)}</td>
+        <td>${r.edgePawnEarly ? "◯" : "-"}</td>
+        <td>${r.oddEventCount >= 1 ? "◯" : "-"}</td>
+        <td>${escapeHtml(r.resultLabel)}</td>
+      </tr>`;
+    });
+
+    html += `</tbody></table>`;
+    html += `<div class="muted">※後手の評価は座標を (10-筋, 10-段) でミラーして「先手視点」に正規化してから算出しています。</div>`;
+    html += `<div class="muted">※攻守5文字は「各棋譜ごとの攻守Bias」をソートし、中央値よりさらに攻撃寄り（center+2）を採用しています。</div>`;
+
+    return html;
+  }
+
+  function getQueryParams() {
+    const sp = new URLSearchParams(location.search);
+    return {
+      uid: sp.get("uid") || "",
+      name: sp.get("name") || ""
+    };
+  }
+
+  function inferWinnerFromRecord(record) {
+    if (!record) return null;
+    const turn = record.turn;
+    const result = record.result;
+
+    if ((turn !== "先手" && turn !== "後手") || (result !== "WIN" && result !== "LOSE")) {
+      return null;
+    }
+    if (turn === "先手") return result === "WIN" ? SENTE : GOTE;
+    return result === "WIN" ? GOTE : SENTE;
+  }
+
+  function convertSiteMovesToCommonMoves(movesRaw) {
+    if (!movesRaw) return [];
+
+    let arr = [];
+    if (Array.isArray(movesRaw)) {
+      arr = movesRaw;
+    } else if (typeof movesRaw === "object") {
+      arr = Object.keys(movesRaw).sort((a,b) => Number(a) - Number(b)).map(k => movesRaw[k]);
+    } else {
+      return [];
+    }
+
+    const out = [];
+    for (let i = 0; i < arr.length; i++) {
+      const m = arr[i];
+      if (!m || !m.to) continue;
+
+      const toX = Number(m.to.c) + 1;
+      const toY = Number(m.to.r) + 1;
+      if (!Number.isFinite(toX) || !Number.isFinite(toY)) continue;
+      if (toX < 1 || toX > 9 || toY < 1 || toY > 9) continue;
+
+      const isDrop = (m.type === "drop");
+      const origin = (!isDrop && m.from)
+        ? { x: Number(m.from.c) + 1, y: Number(m.from.r) + 1 }
+        : null;
+
+      out.push({
+        ply: i + 1,
+        type: "move",
+        to: { x: toX, y: toY },
+        piece: normalizePiece(m.piece || "歩"),
+        isDrop,
+        isPromote: !!m.promote,
+        origin,
+        raw: "",
+        timeSec: Number.isFinite(Number(m.time)) ? Number(m.time) : null
+      });
+    }
+
+    return out;
+  }
+
+  function convertRecordAndArchiveToGame(recordKey, record, archive, targetName) {
+    const turn = record.turn || "先手";
+    const sideUser = (turn === "先手") ? SENTE : GOTE;
+    const opponent = record.opponent || "不明";
+
+    const players = (sideUser === SENTE)
+      ? { sente: targetName || "自分", gote: opponent }
+      : { sente: opponent, gote: targetName || "自分" };
+
+    const winner = inferWinnerFromRecord(record);
+    const moves = convertSiteMovesToCommonMoves(archive?.moves || []);
+
+    if (!moves.length) return null;
+
+    const d = new Date(record.date || Date.now());
+    const dateText = isNaN(d.getTime())
+      ? recordKey
+      : d.toLocaleString("ja-JP", { year:"2-digit", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+
+    return {
+      fileName: `${dateText} vs ${opponent}`,
+      players,
+      sideUser,
+      winner,
+      moves,
+      record
+    };
+  }
+
+  async function loadUserSiteGames(uid, targetName, gameLimit = 20) {
+    const recQ = query(ref(db, `records/${uid}`), limitToLast(gameLimit));
+    const recSnap = await get(recQ);
+    if (!recSnap.exists()) return [];
+
+    const raw = recSnap.val() || {};
+    const entries = Object.entries(raw).map(([recordId, rec]) => ({ recordId, ...rec }));
+
+    entries.sort((a, b) => Number(b.date || 0) - Number(a.date || 0));
+
+    const games = [];
+    for (const rec of entries) {
+      if (!rec.archiveId) continue;
+
+      const arcSnap = await get(ref(db, `archives/${rec.archiveId}`));
+      if (!arcSnap.exists()) continue;
+
+      const archive = arcSnap.val() || {};
+      const game = convertRecordAndArchiveToGame(rec.recordId, rec, archive, targetName);
+      if (game) games.push(game);
+    }
+
+    return games;
+  }
+
+  function seedFromGames(games) {
+    const payload = games.map(g => ({
+      fileName: g.fileName,
+      winner: g.winner,
+      moveCount: g.moves?.length || 0,
+      date: g.record?.date || 0
+    }));
+    return hashFNV1a(JSON.stringify(payload));
+  }
+
+  async function resolveTargetUser() {
+    const qp = getQueryParams();
+
+    if (qp.uid) {
+      resolvedTarget = { uid: qp.uid, name: qp.name || "指定ユーザー" };
+      $("targetUserInfo").textContent = `${resolvedTarget.name} (${resolvedTarget.uid})`;
+      return;
+    }
+
+    return new Promise((resolve) => {
+      onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+        if (!user) {
+          resolvedTarget = { uid: "", name: "" };
+          $("targetUserInfo").innerHTML = `<span class="bad">ログイン状態を確認できませんでした。uid パラメータ付きで開くか、ログイン後に開いてください。</span>`;
+          resolve();
+          return;
+        }
+        resolvedTarget = {
+          uid: user.uid,
+          name: user.displayName || "自分"
+        };
+        $("targetUserInfo").textContent = `${resolvedTarget.name} (${resolvedTarget.uid})`;
+        resolve();
+      }, { onlyOnce: true });
+    });
+  }
+
+  $("run").addEventListener("click", async () => {
+    const uid = resolvedTarget.uid;
+    const targetName = resolvedTarget.name || "自分";
+
+    if (!uid) {
+      $("out").innerHTML = `<div class="bad">対象ユーザーが確定できません。banmaker.html?uid=... で開くか、ログイン後に開いてください。</div>`;
+      return;
+    }
+
+    const minPly = Math.max(1, parseInt($("minPly").value,10) || 1);
+    const maxPly = Math.max(minPly, parseInt($("maxPly").value,10) || 80);
+    const gameLimit = Math.max(1, parseInt($("gameLimit").value,10) || 20);
+
+    $("out").innerHTML = `<div class="muted">サイト棋譜を読み込み中...</div>`;
+
+    try {
+      const games = await loadUserSiteGames(uid, targetName, gameLimit);
+
+      if (!games.length) {
+        $("out").innerHTML = `<div class="bad">解析可能な棋譜がありませんでした。records と archives の両方が存在する対局のみ対象です。</div>`;
+        return;
+      }
+
+      const perGameStats = [];
+      const perGameCastles = [];
+      const perGameResults = [];
+      const perGameRows = [];
+
+      for (const game of games) {
+        const sideUser = game.sideUser;
+        if (sideUser !== SENTE && sideUser !== GOTE) continue;
+
+        const stats = analyzeGameStatsFromCommonGame(game, sideUser, minPly, maxPly);
+        const castle = analyzeCastleForCommonGame(game, sideUser, minPly, maxPly);
+        const res = analyzeSiteResultForUser(game, sideUser);
+
+        perGameStats.push(stats);
+        perGameCastles.push(castle);
+        perGameResults.push(res);
+
+        const attackRate = stats.totalUserMoves ? (stats.atkMoves / stats.totalUserMoves) : 0;
+        const defenseRate = stats.totalUserMoves ? (stats.defMoves / stats.totalUserMoves) : 0;
+        const attackBias = calcGameAttackBias(attackRate, defenseRate);
+
+        const c = castle.best.res;
+        const resultLabel = res.hasResult ? (res.userWin ? "勝" : "負") : "不明";
+
+        perGameRows.push({
+          fileName: game.fileName,
+          players: game.players,
+          sideUser,
+          totalMoves: stats.totalMovesInFile,
+          castleName: c.tmplName,
+          castleStage: c.stage,
+          castleScore: c.score,
+          castleMax: c.maxScore,
+          attackRate,
+          defenseRate,
+          attackBias,
+          styleChar: stats.styleChar,
+          edgePawnEarly: stats.edgePawnEarly,
+          oddEventCount: stats.oddEventCount,
+          resultLabel,
+        });
+      }
+
+      if (!perGameStats.length) {
+        $("out").innerHTML = `<div class="bad">解析に使える棋譜がありませんでした。</div>`;
+        return;
+      }
+
+      const pickedCastle = pickFavoriteCastleAlways(perGameCastles);
+
+      let sh = 0;
+      for (const s of perGameStats) if (s.styleChar === "振") sh++;
+      const style1 = (sh > perGameStats.length / 2) ? "振" : "居";
+
+      const metrics = computeAggregatedMetrics(perGameStats, perGameCastles, perGameResults, style1);
+      const seedU32 = seedFromGames(games);
+
+      const sortedAttackBiases = perGameStats.map(g => {
+        const attackRate = g.totalUserMoves ? (g.atkMoves / g.totalUserMoves) : 0;
+        const defenseRate = g.totalUserMoves ? (g.defMoves / g.totalUserMoves) : 0;
+        return calcGameAttackBias(attackRate, defenseRate);
+      }).sort((a, b) => a - b);
+
+      const representativeAttackBias = pickRepresentativeAttackBias(perGameStats);
+      const center = Math.floor((sortedAttackBiases.length - 1) / 2);
+      const representativeAttackBiasIndex = sortedAttackBiases.length
+        ? Math.min(sortedAttackBiases.length - 1, center + 2)
+        : 0;
+
+      const atkDef5 = makeAttackDefenseStringFromBias(representativeAttackBias);
+      const free5 = buildFreeChars(metrics, style1, seedU32);
+      const kanji11 = atkDef5 + style1 + free5.join("");
+
+      const result = {
+        targetName,
+        sideMode: "site-records",
+        favoriteCastle: pickedCastle.favorite,
+        kanji11,
+        atkDef5,
+        style1,
+        free5,
+        seedU32,
+        metrics,
+        perGameRows,
+        representativeAttackBias,
+        representativeAttackBiasIndex,
+        sortedAttackBiases,
+      };
+
+      $("out").innerHTML = renderAll(result);
+      renderCastleMiniBoard(pickedCastle.favorite.id, kanji11);
+
+    } catch (err) {
+      console.error(err);
+      $("out").innerHTML = `<div class="bad">解析中にエラーが発生しました。コンソールを確認してください。</div>`;
+    }
+  });
+
+  await resolveTargetUser();
+  renderCastleMiniBoard("hidari_mino", "攻攻守守居普静形捌急普");
+</script>
+</body>
+	</html>
