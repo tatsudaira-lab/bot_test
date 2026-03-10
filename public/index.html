@@ -1,11 +1,28 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="description" content="米子将棋研究会の公式オンライン対局サイト。会員登録無料、ブラウザですぐに遊べるリアルタイム将棋対戦アプリです。">
-<meta name="theme-color" content="#4CAF50"> <title>i💗将棋 - オンライン対局</title>
+
+<meta name="description" content="K☖ma倶楽部（こまくらぶ）は、登録無料でブラウザからすぐに遊べるオンライン将棋道場です。リアルタイム通信対局、レーティングシステム、15分・30秒将棋に対応。">
+<meta name="keywords" content="将棋,オンライン,対局,無料,ブラウザ,レーティング,早指し,Koma倶楽部">
+
+<meta property="og:title" content="K☖ma倶楽部 - オンライン将棋対局サイト">
+<meta property="og:description" content="いつでも、どこでも、誰とでも。登録無料でブラウザからすぐに遊べる本格オンライン将棋道場です。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://komaclub-shogi.web.app/">
+<meta property="og:image" content="https://komaclub-shogi.web.app/images/ogp-image.png">
+<meta property="og:site_name" content="K☖ma倶楽部">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="K☖ma倶楽部 - オンライン将棋対局サイト">
+<meta name="twitter:description" content="いつでも、どこでも、誰とでも。登録無料でブラウザからすぐに遊べる本格オンライン将棋道場です。">
+<meta name="twitter:image" content="https://komaclub-shogi.web.app/images/ogp-image.png">
+<meta name="theme-color" content="#4CAF50"> <title>K☖ma倶楽部 - テスト環境<</title>
+<meta name="google-site-verification" content="906V5M946fLJ6Mdstk9X502fPfZzbk9YON8YyX13lqo" />
 <style>
+
     /* 全体の基本設定 */
     body { 
         font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Yu Gothic", sans-serif; 
@@ -31,7 +48,7 @@
         display: none; /* JSロード後に表示 */
     }
 
-    /* ▼▼▼ スマホ専用レイアウト（画面幅600px以下） ▼▼▼ */
+    /* スマホ専用レイアウト（画面幅600px以下） */
     @media (max-width: 600px) {
         .container {
             width: 100%;
@@ -47,17 +64,53 @@
         }
         /* 将棋盤を画面幅最大に */
         #board {
-            width: 98vw !important;
-            height: 98vw !important;
+            width: 100% !important;   /* 親要素の幅に合わせる */
+            height: auto !important;  /* 高さはアスペクト比(正方形)で自動計算 */
+            aspect-ratio: 1 / 1;      /* 正方形を維持 */
             max-width: none !important;
         }
         /* 駒台やタイマーを少し小さくして収める */
-        .komadai-container { width: 98vw !important; }
+        .komadai-container { width: 100% !important; }
         .timer { font-size: 0.9rem !important; height: 30px !important; }
         /* ボタンを押しやすく */
         button, .btn { min-height: 44px; } 
-    }
-    /* ▲▲▲ スマホ調整ここまで ▲▲▲ */
+
+        /* モバイル専用：検索結果をカード型にする */
+        #search-result-area .list-table,
+        #search-result-area .list-table tbody { display: block; width: 100%; }
+        #search-result-area .list-table thead { display: none; }
+        
+        #search-result-area .list-table tbody tr { 
+            display: block; background: #fff; border: 1px solid #ccc; 
+            border-radius: 8px; margin-bottom: 15px; padding: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        #search-result-area .list-table tbody td { 
+            display: block; border: none; padding: 2px 0 !important; 
+        }
+        
+        /* 1列目：日時 */
+        #search-result-area .list-table tbody td:nth-child(1) { 
+            font-size: 0.8rem; color: #666; border-bottom: 1px dashed #eee; 
+            padding-bottom: 6px !important; margin-bottom: 6px; text-align: left !important;
+        }
+        /* 2列目：対局者 */
+        #search-result-area .list-table tbody td:nth-child(2) { padding: 8px 0 !important; }
+        
+        /* 3列目：手数 / 4列目：結果（横並びに配置） */
+        #search-result-area .list-table tbody td:nth-child(3),
+        #search-result-area .list-table tbody td:nth-child(4) { 
+            display: inline-block; font-size: 0.85rem; color: #555; 
+            margin-right: 15px; text-align: left !important;
+        }
+        
+        /* 5列目：再生ボタン */
+        #search-result-area .list-table tbody td:nth-child(5) { margin-top: 10px; }
+        #search-result-area .list-table tbody td:nth-child(5) button { 
+            width: 100%; padding: 12px; margin: 0; font-size: 1rem;
+        }
+    } /* スマホ調整ここまで */
+
 
     /* 初期表示制御 */
     #top-screen { display: block; } 
@@ -93,8 +146,36 @@
     
     .features-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left; }
     .features-section h3 { border-bottom: 2px solid #e4f0c5; padding-bottom: 5px; margin-top: 0; color: #333; font-size: 1.1rem; }
-    .features-list { padding-left: 20px; line-height: 1.6; color: #444; font-size: 0.95rem; }
+    .features-list { padding-left: 20px; line-height: 1.6; color: #444; font-size: 0.95rem; margin-top: 0; }
     
+    .features-container { display: flex; gap: 15px; flex-direction: column; }
+    .features-list-wrap { flex: 1; }
+    .features-rating-wrap {
+        width: 100%; max-height: 160px; overflow-y: auto;
+        border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box;
+    }
+    .features-rating-table { width: 100%; border-collapse: collapse; font-size: 0.8rem; text-align: center; }
+    .features-rating-table th { background-color: #f5f5f5; position: sticky; top: 0; padding: 6px; border-bottom: 1px solid #ccc; }
+    .features-rating-table td { padding: 4px; border-bottom: 1px solid #eee; }
+    @media (min-width: 600px) {
+        .features-container { flex-direction: row; }
+        .features-rating-wrap { width: 220px; flex-shrink: 0; }
+    }
+    
+    .news-section { background: white; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left; }
+    .news-section h3 { border-bottom: 2px solid #e4f0c5; padding-bottom: 5px; margin-top: 0; color: #333; font-size: 1.1rem; }
+    .news-list { list-style: none; padding: 0; margin: 0; }
+    .news-list li { padding: 10px 0; border-bottom: 1px dashed #ddd; display: flex; flex-direction: column; gap: 4px; font-size: 0.9rem; }
+    .news-list li:last-child { border-bottom: none; padding-bottom: 0; }
+    .news-date { font-weight: bold; color: #558b2f; font-size: 0.8rem; }
+    .news-title { color: #333; line-height: 1.4; }
+    .new-badge { color: white; background: #e53935; font-size: 0.65rem; padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle; font-weight: bold; display: inline-block; }
+    @media (min-width: 600px) {
+
+        .news-list li { flex-direction: row; align-items: baseline; gap: 15px; }
+        .news-date { flex-shrink: 0; width: 85px; }
+    }
+
     .auth-section { background: white; padding: 25px 20px; border-radius: 8px; border: 2px solid #4CAF50; }
     .auth-header { font-size: 1.2rem; font-weight: bold; margin-bottom: 20px; color: #333; }
     .auth-toggle { font-size: 0.9rem; color: #0d47a1; cursor: pointer; text-decoration: underline; margin-top: 15px; display: inline-block; padding: 10px; }
@@ -119,24 +200,40 @@
     .badge-playing { background-color: #d32f2f; }
     .badge-finished { background-color: #616161; }
     
-    /* ゲーム画面 */
+   /* ゲーム画面 */
     #game-wrapper { padding-bottom: 20px; }
-    #room-info-bar { background: #fff; padding: 8px; margin: 0 auto 5px auto; width: 100%; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-    #match-header { font-size: 1rem; font-weight: bold; text-align: center; margin-bottom: 2px; }
-    .vs-sep { color: #d32f2f; margin: 0 5px; font-size: 0.8rem; }
-    #match-meta-info { font-size: 0.75rem; color: #666; text-align: center; }
-    #status { font-weight: bold; color: #333; height: 30px; margin-bottom: 5px; font-size: 1.1rem; display: flex; justify-content: center; align-items: center; }
+    #room-info-bar { background: transparent; margin: 0 auto 8px auto; width: 100%; display: flex; justify-content: center; align-items: baseline; gap: 15px; }
+    #match-header { display: none; }
+    #match-meta-info { font-size: 0.85rem; color: #555; }
+    #status { font-weight: bold; color: #333; font-size: 1.1rem; }
     .status-win { color: #d32f2f; font-weight: 900; font-size: 1.3rem; }
 
-    /* スマホでの反転設定（900px未満のみ適用） */
+   /* 手数表示ボックス */
+    .move-counter { display: flex; justify-content: center; align-items: center; min-width: 40px; height: 38px; padding: 0 5px; background: #fff; border: 2px solid #aaa; border-radius: 6px; font-weight: bold; font-size: 1.1rem; color: #333; box-sizing: border-box; font-family: monospace; }
+
     @media (max-width: 899px) {
-        .gote-view #game-layout-container { 
-            flex-direction: column-reverse; /* 上下を入れ替え */
+
+        #game-layout-container {
+            display: flex;
+            flex-direction: column;
         }
+      
+        #game-layout-container.gote-view { 
+            flex-direction: column-reverse; 
+        }
+
         .gote-view #board { 
             transform: rotate(180deg); 
         }
+
+        .gote-view #komadai-gote .komadai-piece img { 
+            transform: rotate(0deg); 
+        }
+        .gote-view #komadai-sente .komadai-piece img { 
+            transform: rotate(180deg); 
+        }
     }
+
     /* 将棋盤設定 */
     #board { 
         display: grid; 
@@ -146,9 +243,16 @@
         margin: 2px auto; border: 2px solid #000; background-color: #deb06d; 
         box-shadow: 0 5px 15px rgba(0,0,0,0.3); position: relative; 
     }
-    .cell { border: 0.5px solid #555; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative; }
+    .cell { box-sizing: border-box;border: 0.5px solid #555; display: flex; justify-content: center; align-items: center; cursor: pointer; position: relative;overflow: hidden; }
     .cell.gote img { transform: rotate(180deg); }
-    .cell img, .komadai-piece img { max-width: 95%; max-height: 95%; width: auto; height: auto; pointer-events: none; }
+    .komadai-piece img { max-width: 95%; max-height: 95%; width: auto; height: auto; pointer-events: none; }
+    .cell img { 
+        width: 96%;   
+        height: 96%;  
+        object-fit: contain; 
+        pointer-events: none; 
+        display: block;
+    }
     .selected { background-color: rgba(255, 0, 0, 0.4) !important; }
     .last-move { background-color: rgba(255, 255, 0, 0.4); }
     
@@ -156,9 +260,16 @@
     .komadai-container { width: 96vw; max-width: 500px; display: flex; justify-content: space-between; align-items: flex-end; margin: 2px auto; }
     .komadai { flex: 1; min-width: 80px; background: #deb06d; border: 1px solid #555; min-height: 50px; padding: 2px; display: block; text-align: left; }
     .komadai-piece { display: inline-block; margin: 1px; cursor: pointer; width: 28px; height: 28px; position: relative; vertical-align: bottom; }
-    .komadai-piece img { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 90%; height: 90%; }
-    #komadai-gote .komadai-piece img { transform: translate(-50%, -50%) rotate(180deg); }
-    .gote-view #komadai-sente .komadai-piece img { transform: translate(-50%, -50%) rotate(180deg); }
+    .komadai-piece img { 
+        width: 100%; 
+        height: 100%; 
+        object-fit: contain;
+        pointer-events: none; 
+        display: block;
+    }
+    
+    #komadai-gote .komadai-piece img { transform: rotate(180deg); }
+    .gote-view #komadai-sente .komadai-piece img { transform: rotate(180deg); }
     
     .timer-box { display: flex; flex-direction: column; align-items: center; margin: 0 2px; width: 65px; flex-shrink: 0; }
     .timer { width: 100%; background: #333; color: #eee; font-family: monospace; font-size: 1rem; display: flex; justify-content: center; align-items: center; border: 2px solid #555; font-weight: bold; height: 32px; border-radius: 4px; }
@@ -209,29 +320,33 @@
             gap: 20px;
         }
 
-        /* 1. 駒台の駒を大きくする */
+        /* 1. 駒台の駒をグリッドに合わせて自動調整 */
         .komadai-piece {
-            width: 56px;  /* スマホの倍サイズ */
-            height: 56px;
-            margin: 2px;
+            width: 100%;  
+            height: 100%;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .komadai-piece img { /* 追加 */
+            width: 95%;
+            height: 95%;
+            object-fit: contain;
         }
 
         /* 2. 左側のプレイヤーエリアを「逆順（上詰め）」にする */
-        /* これにより [駒台]→[時間]→[名前] の順になり、駒台が左上に来ます */
-        
-        /* 通常時の左側（後手エリア） */
         #area-gote {
             flex-direction: column-reverse; 
-            justify-content: flex-end; /* 上端（flex-end）に寄せる */
+            justify-content: flex-end;
         }
         #area-gote .player-info {
-            flex-direction: column-reverse; /* 名前と時間も逆順に */
+            flex-direction: column-reverse;
             margin-bottom: 0;
-            margin-top: 10px;
+            margin-top: 25px; /* 10pxから上に移動 */
         }
 
         /* --- 反転機能への対応 --- */
-        /* 反転時、左側に来るのは「先手（相手）」なので、先手を逆順にする */
         .gote-view #area-sente {
             flex-direction: column-reverse !important;
             justify-content: flex-end !important;
@@ -239,26 +354,24 @@
         .gote-view #area-sente .player-info {
             flex-direction: column-reverse !important;
             margin-bottom: 0;
-            margin-top: 10px;
+            margin-top: 25px; /* 10pxから上に移動 */
         }
 
-        /* 反転時、右側に来る「後手（自分）」は通常通り（下詰め）に戻す */
         .gote-view #area-gote {
             flex-direction: column !important;
             justify-content: flex-end !important;
         }
         .gote-view #area-gote .player-info {
             flex-direction: column !important;
-            margin-bottom: 10px;
+            margin-bottom: 25px; /* 10pxから上に移動 */
             margin-top: 0;
         }
 
         /* 左右のサイドバー（名前・時間・駒台） */
         .player-area {
-            /* ▼▼▼ 盤(550px)の約1/3サイズに変更 ▼▼▼ */
-            width: 184px; 
-            height: 550px; /* 盤の高さに合わせる */
-            justify-content: flex-end; /* 下詰め（駒台を手元に） */
+            width: 200px; /* 184pxから均等に拡大 */
+            height: 550px; 
+            justify-content: flex-end; 
             order: 1;
         }
 
@@ -267,20 +380,30 @@
             flex-direction: column;
             align-items: center;
             justify-content: flex-end;
-            margin-bottom: 10px;
+            margin-bottom: 25px; /* 10pxから上に移動 */
         }
         .player-name-display { font-size: 1.1rem; margin-bottom: 5px; text-align: center; }
         .timer { font-size: 1.3rem; height: 36px; width: 100px; }
 
-        /* 駒台設定 */
+        /* 駒台設定（3列4行のグリッドに変更） */
         .komadai {
             width: 100%;
-            height: 215px; /* 高さを固定 */
-            flex: none;    /* ←これ重要！勝手に伸びるのを防ぐ */
+            height: auto; /* 高さを自動化 */
+            aspect-ratio: 3 / 4; /* 縦横比を3:4に固定 */
+            flex: none;    
             min-height: 0;
-            display: flex;
-            flex-wrap: wrap;
-            align-content: flex-start;
+            padding: 4px;
+            box-sizing: border-box; 
+        }
+
+        /* リスト部分をグリッド化 */
+        #hand-sente-list, #hand-gote-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(4, 1fr);
+            gap: 2px;
+            width: 100%;
+            height: 100%;
         }
 
         #board {
@@ -338,38 +461,54 @@
         margin: 0;
     }
     
-    /* スマホ用反転（既存互換） */
-    @media (max-width: 899px) {
-        .gote-view { flex-direction: column-reverse; }
-        .gote-view #board { transform: rotate(180deg); }
-        .gote-view #komadai-sente .komadai-piece img { transform: rotate(180deg); }
-    }
 </style>
 </head>
 <body>
 
     <div id="top-screen" class="container">
         <div class="hero-section">
-            <h1 class="app-title">I LOVE 将棋</h1>
-            <p class="app-subtitle">2025年末、別れを惜しみ最後まで指した。<br>あの感動をもう一度。<br>いつでも、どこでも、誰とでも。<br>真剣勝負を愛するオンライン将棋道場。</p>
+            <h1 class="app-title">K☖ma倶楽部(テスト環境)</h1>
+            <p class="app-subtitle">いつでも、どこでも、誰とでも。<br>登録無料ですぐに遊べるオンライン将棋道場。</p>
         </div>
 
         <div class="features-section">
-            <h3>当サイトの特徴</h3>
-            <ul class="features-list">
-                <li><strong>リアルタイム対戦：</strong> 通信対局で全国のプレイヤーと腕試し。</li>
-                <li><strong>レーティングシステム：</strong> 勝敗に応じて変動するレートで実力を可視化。</li>
-                <li><strong>早指し対応：</strong> 持ち時間15分の通常戦に加え、30秒将棋も実装。</li>
+    <h3>当サイトの特徴</h3>
+    <ul class="features-list">
+        <li><strong>リアルタイム対戦：</strong> 通信対局で全国のプレイヤーと腕試し。</li>
+        <li>
+            <strong>レーティングシステム：</strong> 勝敗に応じて変動するレートで実力を可視化。
+            <a href="#" onclick="openRatingModal(); return false;" style="color:#0d47a1; text-decoration:underline; margin-left:5px; font-size:0.9rem; cursor:pointer;">段級位</a>
+            <span style="color:#ccc; margin:0 5px;">|</span>
+            <a href="#" onclick="openRatingCalcModal(); return false;" style="color:#0d47a1; text-decoration:underline; font-size:0.9rem; cursor:pointer;">R計算表</a>
+            </li>
+        <li><strong>早指し対応：</strong> 持ち時間15分の通常戦に加え、30秒将棋も実装。</li>
+    </ul>
+</div>
+
+   <div class="news-section">
+            <h3>お知らせ</h3>
+            <ul class="news-list">
+                <li>
+                    <div class="news-date">2026.03.07</div>
+                    <div class="news-title">
+                        <strong style="color:#d32f2f;">【重要】対局中の通信切断について</strong><span class="new-badge">New</span><br>
+                        <span style="font-size:0.85rem; color:#555; display:inline-block; margin-top:4px;">対局中にブラウザを閉じたり、ページを更新（リロード）したり、スマホで別のアプリを開く・画面がスリープすると「切断負け」となる場合があります。通信環境が安定した状態で、画面を開いたままお楽しみください。</span>
+                    </div>
+                </li>
+                <li>
+                    <div class="news-date">2026.03.07</div>
+                    <div class="news-title">K☖ma倶楽部はじめます。</div>
+                </li>
             </ul>
-        </div>        
+        </div>       
 
         <div class="auth-section">
             <h2 id="auth-title" class="auth-header">ログインして始める</h2>
             
             <div class="input-group">
-                <label class="input-label">ユーザー名 (半角英数のみ)</label>
-                <input type="text" id="auth-userid" class="input-field" placeholder="例: tanaka123" inputmode="email">
-                <div class="note-text">※これが対局時の名前になります</div>
+                <label class="input-label">ユーザー名 (半角英数・ハイフン・ドット)</label>
+                <input type="text" id="auth-userid" class="input-field" placeholder="例: tanaka-123" inputmode="email" maxlength="20">
+                <div class="note-text">※対局時の名前</div>
             </div>
             
             <div class="input-group">
@@ -382,29 +521,35 @@
                 <input type="text" id="auth-region" class="input-field" placeholder="例: 鳥取県">
             </div>
 
+            <div class="input-group" id="auth-rank-group" style="display:none;">
+                <label class="input-label">現在の棋力（初期レート）</label>
+                <select id="auth-initial-rank" class="input-field">
+                    <option value="2300">五段 (2300点)</option>
+                    <option value="1900">三段 (1900点)</option>
+                    <option value="1600">初段 (1600点)</option>
+                    <option value="1300" selected>３級 (1300点)</option>
+                    <option value="1100">５級 (1100点)</option>
+                    <option value="600">１０級 (600点)</option>
+                    <option value="0">初心者 (0点)</option>
+                </select>
+            </div>
+
             <button class="btn btn-primary" id="auth-action-btn" onclick="handleAuth()">ログイン</button>
             <div class="auth-toggle" onclick="toggleAuthMode()" id="auth-toggle-text">アカウントをお持ちでない方はこちら（新規登録）</div>
-        </div>
-
-        <div class="member-menu-section">
-            <h3>会員メニュー</h3>
-            <div class="menu-buttons">
-                <a href="?page=members" target="_blank" class="btn btn-outline" style="text-decoration:none; display:inline-block; line-height:20px;">会員名簿</a>
-                <a href="?page=search" target="_blank" class="btn btn-outline" style="text-decoration:none; display:inline-block; line-height:20px;">棋譜検索</a>
-            </div>
         </div>
 
         <div class="site-footer">
             <div class="footer-links">
                 <a href="terms.html" target="_blank">利用規約</a> | 
                 <a href="privacy.html" target="_blank">プライバシーポリシー</a> | 
-                <a href="https://forms.gle/jWn8oq2J5SueWY3x9" target="_blank" rel="noopener noreferrer">お問い合わせ</a> | 
-                <a href="#" onclick="openAdmin(); return false;">管理画面</a>
+                <a href="faq.html" target="_blank">よくある質問(FAQ)</a> | 
+                <a href="https://forms.gle/jWn8oq2J5SueWY3x9" target="_blank" rel="noopener noreferrer">お問い合わせ</a>
             </div>
             <p>&copy; 米子将棋研究会</p>
         </div>
-    </div><div id="member-list-screen" class="container">
-    <h2>会員名簿</h2>
+    </div>
+    <div id="member-list-screen" class="container">
+    <h2 id="member-list-title">会員名簿</h2>
     <div style="overflow-x:auto;">
         <table class="list-table">
             <thead>
@@ -421,7 +566,6 @@
             </tbody>
         </table>
     </div>
-    <button class="btn btn-outline" onclick="showScreen('top-screen')">トップへ戻る</button>
 </div>
 
     <div id="dashboard-screen" class="container">
@@ -448,8 +592,23 @@
             </div>
         </div>
 
-        <button class="btn btn-secondary" onclick="goToLobby()">対局室へ</button>
-        <button class="btn btn-outline" onclick="logout()">ログアウト</button>
+   <div class="member-menu-section">
+            <h3>会員メニュー</h3>
+            
+            <div class="menu-buttons" style="margin-bottom: 12px;">
+                <button class="btn btn-secondary" onclick="goToLobby()" style="margin:0; width:48%;">対局室</button>
+                <a href="?page=search" target="_blank" class="btn btn-outline" style="text-decoration:none; display:inline-block; line-height:20px; box-sizing:border-box; width:48%; margin:0;">棋譜検索</a>
+            </div>
+            
+            <div class="menu-buttons">
+                <a href="?page=members" target="_blank" class="btn btn-outline" style="text-decoration:none; display:inline-block; line-height:20px; box-sizing:border-box; width:48%; margin:0;">会員名簿</a>
+                <button class="btn btn-outline" onclick="logout()" style="margin:0; width:48%;">ログアウト</button>
+            </div>
+        </div>
+
+        <div style="margin-top: 30px; border-top: 1px solid #eee; padding-top: 15px; font-size: 0.8rem;">
+            <a href="#" onclick="openAdmin(); return false;" style="color:#aaa; text-decoration:none;">管理画面</a>
+        </div>
     </div>
 
     <div id="search-screen" class="container">
@@ -467,44 +626,54 @@
             <table class="list-table">
             <thead>
                     <tr>
-                        <th>日時</th>
-                        <th>先手</th>
-                        <th>後手</th>
-                        <th>手数</th>
-                        <th>再生</th>
+                        <th style="width:18%;">日時</th>
+                        <th style="width:45%; text-align:center;">対局者 (先手 VS 後手)</th>
+                        <th style="width:12%;">手数</th>
+                        <th style="width:13%;">判定</th>
+                        <th style="width:12%;">再生</th>
                     </tr>
                 </thead>
                 <tbody id="search-list-body"></tbody>
             </table>
         </div>
-        
-        <button class="btn btn-outline" onclick="showScreen('top-screen')">トップへ戻る</button>
     </div>
-    <div id="lobby-screen" class="container">
+        <div id="lobby-screen" class="container">
         <h2>対局室</h2>
-        <div style="text-align: right; margin-bottom: 10px;">
-            <button onclick="backToDashboard()" class="btn-small">戻る</button>
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <div style="display: flex; gap: 5px; align-items: center;">
+                <span style="font-size: 0.85rem; font-weight:bold; color: #555;">盤面:</span>
+                <button id="btn-theme-default" class="btn btn-outline btn-small" onclick="changeBoardTheme('default')" style="margin:0; padding: 4px 8px;">標準</button>
+                <button id="btn-theme-image1"  class="btn btn-outline btn-small" onclick="changeBoardTheme('image1')"  style="margin:0; padding: 4px 8px;">木目調1</button>
+                <button id="btn-theme-image2"  class="btn btn-outline btn-small" onclick="changeBoardTheme('image2')"  style="margin:0; padding: 4px 8px;">木目調2</button>
+            </div>
+            <button onclick="backToDashboard()" class="btn-small" style="margin:0;">マイページ戻る</button>
         </div>
 
         <div id="invite-area" style="display:none; background:#e3f2fd; padding:10px; margin-bottom:15px; border-radius:5px;">
             <div id="invite-text" style="font-weight:bold; color:#0d47a1; margin-bottom:10px;"></div>
-            <button class="btn btn-secondary" onclick="joinInvitedRoom('player')">挑戦する</button>
-            <button class="btn btn-gray" onclick="joinInvitedRoom('spectator')">観戦する</button>
+            <button class="btn btn-secondary" onclick="joinInvitedRoom('player')">挑戦</button>
+            <button class="btn btn-gray" onclick="joinInvitedRoom('spectator')">観戦</button>
         </div>
 
-        <div id="create-room-area" style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:20px;">
+    <div id="create-room-area" style="background:#f9f9f9; padding:15px; border-radius:8px; margin-bottom:20px;">
             <div class="input-group">
                 <label class="input-label">対局ルール</label>
                 <select id="time-rule" class="input-field">
                     <option value="normal">持ち時間15分 + 秒読み30秒</option>
-                    <option value="blitz">初手から30秒 (早指し)</option>
+                    <option value="blitz">持ち時間1分 + 秒読み30秒</option>
                 </select>
             </div>
-            <button class="btn btn-primary" onclick="createRoom()">対局室を作成</button>
+            <button class="btn btn-primary" onclick="createRoom()">対局待ちにする</button>
+        </div>
+
+        <div id="hosting-wait-area" style="display:none; background:#f6fbf2; padding:20px; border-radius:8px; margin-bottom:20px; border:1px solid #c8e6c9;">
+            <h3 style="margin-top:0; color:#558b2f; font-size:1.1rem;">対局待ち...</h3>
+            <p>挑戦された場合、通知でお知らせします。</p>
+            <button class="btn" onclick="cancelRoom()" style="background:white; border:1px solid #aaa; color:#666; margin-top:10px;">キャンセル</button>
         </div>
         
         <div id="room-list-container">
-            <div style="font-weight:bold; margin-bottom:5px; text-align:left;">対局室一覧</div>
+            <div style="font-weight:bold; margin-bottom:5px; text-align:left;">対局一覧</div>
             <table class="list-table">
                 <thead>
                     <tr>
@@ -521,15 +690,10 @@
     </div>
     
     <div id="game-wrapper" class="container" style="display:none; width:100%; max-width:none; padding:10px; background:transparent; box-shadow:none;">
-        <div id="room-info-bar" style="margin-bottom:10px; border:none;">
-            <div id="match-meta-info">
-                <span id="rule-display"></span>
-            </div>
-
-            <div id="match-header" style="display:none;"><span id="player-sente"></span><span id="player-gote"></span></div>
-        </div>
         
-        <div id="status" style="font-weight:bold; margin-bottom:5px;">読み込み中...</div>
+        <div id="room-info-bar">
+            <div id="status">読み込み中...</div>
+        </div>
 
         <div id="game-layout-container">
             
@@ -558,28 +722,60 @@
             </div>
 
         </div>
-        <div id="controls-area" style="margin-top:15px;">
-            <div id="controls" style="display:flex; justify-content:center; gap:10px; flex-wrap:wrap;">
-                <button id="btn-start" onclick="startGame()">対局開始</button>
-                <button id="btn-resign" onclick="resign()">投了</button>
-                <button id="btn-flip" onclick="toggleView()">反転</button>
-                <button id="btn-exit" onclick="exitRoom()">退室</button>
+
+           <div id="controls-area" style="margin-top:15px; width:100%;">
+            
+            <div id="controls" style="display:flex; justify-content:center; align-items:center; width:100%; gap:8px;">
+                <div style="display:flex; flex:1; justify-content:flex-end; flex-wrap:wrap; gap:8px;">
+                    <button id="btn-resign" style="margin:0; width:auto; padding:10px 15px;" onclick="resign()">投了</button>
+                    <button id="btn-draw" style="margin:0; width:auto; padding:10px 15px;" onclick="offerDraw()">引分</button>
+                </div>
+                
+                <div id="move-count-display" class="move-counter" style="flex-shrink:0;">0</div>
+                
+                <div style="display:flex; flex:1; justify-content:flex-start; flex-wrap:wrap; gap:8px;">
+                    <button id="btn-flip" style="margin:0; width:auto; padding:10px 15px;" onclick="toggleView()">反転</button>                
+                    <button id="btn-exit" style="margin:0; width:auto; padding:10px 15px;" onclick="exitRoom()">退室</button>
+                </div>
             </div>
-            <div id="replay-controls" style="display:none; justify-content:center; gap:10px; margin-top:10px;">
-                <button class="btn btn-gray" onclick="replayPrev()">◀ 戻る</button>
-                <button class="btn btn-secondary" onclick="replayNext()">進む ▶</button>
-                <button class="btn btn-outline" onclick="exitReplay()">閉じる</button>
+
+            <div id="replay-controls" style="display:none; justify-content:center; align-items:center; width:100%; gap:6px; margin-top:10px;">
+                
+                <div style="display:flex; flex:1; justify-content:flex-end; flex-wrap:wrap; gap:6px;">
+                    <button class="btn btn-outline" style="margin:0; width:auto; padding:10px 12px;" onclick="toggleView()">反転</button>
+                    <button class="btn btn-primary" style="margin:0; width:auto; padding:10px 12px;" onclick="downloadKifu()">保存</button>
+                    <button class="btn btn-gray" style="margin:0; width:auto; padding:10px 12px;" onclick="replayFirst()">◀◀</button>
+                    <button class="btn btn-gray" style="margin:0; width:auto; padding:10px 15px;" onclick="replayPrev()">◀</button>
+                </div>
+                
+                <div id="replay-move-count-display" class="move-counter" style="flex-shrink:0;">0</div>
+                
+                <div style="display:flex; flex:1; justify-content:flex-start; flex-wrap:wrap; gap:6px;">
+                    <button class="btn btn-secondary" style="margin:0; width:auto; padding:10px 15px;" onclick="replayNext()">▶</button>
+                    <button class="btn btn-secondary" style="margin:0; width:auto; padding:10px 12px;" onclick="replayLast()">▶▶</button>
+                    <button class="btn btn-outline" style="margin:0; width:auto; padding:10px 12px;" onclick="exitReplay()">閉じる</button>
+                </div>
+                
             </div>
         </div>
-    </div>
 
-    <div id="admin-screen" class="container">
+    </div><div id="admin-screen" class="container">
         <h2>管理者画面</h2>
-        <div class="admin-stat-box">閲覧数: <span id="admin-connection-count" style="color:red; font-size:1.2rem;">0</span></div>
+        <div class="admin-stat-box">
+            閲覧数: <span id="admin-connection-count" style="color:red; font-size:1.2rem;">0</span>
+            <button class="btn btn-warning btn-small" onclick="resetOnlineCount()" style="margin-left: 15px;">強制リセット</button>
+        </div>
+        
         <div style="font-weight:bold; margin-bottom:5px;">会員リスト</div>
         <table class="list-table">
             <thead><tr><th>ユーザー</th><th>レート</th><th>操作</th></tr></thead>
             <tbody id="admin-user-list"><tr><td colspan="3">読み込み中...</td></tr></tbody>
+        </table>
+
+        <div style="font-weight:bold; margin-top:25px; margin-bottom:5px;">現在の対局部屋</div>
+        <table class="list-table" style="margin-bottom:20px;">
+            <thead><tr><th style="width:40%;">部屋 / 作成者</th><th style="width:35%;">状態 / 経過</th><th style="width:25%;">操作</th></tr></thead>
+            <tbody id="admin-room-list"><tr><td colspan="3">読み込み中...</td></tr></tbody>
         </table>
         <button class="btn btn-outline" onclick="closeAdmin()">戻る</button>
     </div>
@@ -606,6 +802,139 @@
         </div>
     </div>
 
+  <div id="challenge-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:10px; text-align:center; max-width:90%; width:320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#d32f2f;"> 対局希望</h3>
+        <div id="challenge-msg" style="margin:20px 0; font-weight:bold; font-size:1.1rem; line-height:1.5;"></div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn btn-primary" onclick="answerChallenge(true)">OK</button>
+            <button class="btn btn-gray" onclick="answerChallenge(false)">拒否</button>
+        </div>
+    </div>
+</div>
+
+  <div id="challenging-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:10px; text-align:center; max-width:90%; width:320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#1976d2;">挑戦中...</h3>
+        <div id="challenging-msg" style="margin:15px 0; font-weight:bold; font-size:1.1rem; line-height:1.5;"></div>
+        <div style="font-size:2.5rem; font-weight:bold; color:#d32f2f; margin-bottom: 20px;" id="challenging-countdown">30</div>
+        <button class="btn btn-gray" onclick="cancelChallenge()" style="margin:0;">キャンセル</button>
+    </div>
+</div>
+
+<div id="rating-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:90%; width:320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display:flex; flex-direction:column; max-height:80vh;">
+        <h3 style="margin-top:0; color:#333; border-bottom:2px solid #e4f0c5; padding-bottom:5px;">レーティング早見表</h3>
+        <div style="overflow-y:auto; margin-bottom:15px; flex:1;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:center;">
+                <thead>
+                    <tr>
+                        <th style="background:#f5f5f5; position:sticky; top:0; padding:6px; border-bottom:1px solid #ccc;">段級位</th>
+                        <th style="background:#f5f5f5; position:sticky; top:0; padding:6px; border-bottom:1px solid #ccc;">レーティング</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">九段</td><td style="padding:4px; border-bottom:1px solid #eee;">3100点以上</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">八段</td><td style="padding:4px; border-bottom:1px solid #eee;">3099～2900点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">七段</td><td style="padding:4px; border-bottom:1px solid #eee;">2899～2700点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">六段</td><td style="padding:4px; border-bottom:1px solid #eee;">2699～2500点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">五段</td><td style="padding:4px; border-bottom:1px solid #eee;">2499～2300点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">四段</td><td style="padding:4px; border-bottom:1px solid #eee;">2299～2100点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">三段</td><td style="padding:4px; border-bottom:1px solid #eee;">2099～1900点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">二段</td><td style="padding:4px; border-bottom:1px solid #eee;">1899～1700点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">初段</td><td style="padding:4px; border-bottom:1px solid #eee;">1699～1600点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１級</td><td style="padding:4px; border-bottom:1px solid #eee;">1599～1500点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">２級</td><td style="padding:4px; border-bottom:1px solid #eee;">1499～1400点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">３級</td><td style="padding:4px; border-bottom:1px solid #eee;">1399～1300点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">４級</td><td style="padding:4px; border-bottom:1px solid #eee;">1299～1200点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">５級</td><td style="padding:4px; border-bottom:1px solid #eee;">1199～1100点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">６級</td><td style="padding:4px; border-bottom:1px solid #eee;">1099～1000点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">７級</td><td style="padding:4px; border-bottom:1px solid #eee;">999～900点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">８級</td><td style="padding:4px; border-bottom:1px solid #eee;">899～800点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">９級</td><td style="padding:4px; border-bottom:1px solid #eee;">799～700点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１０級</td><td style="padding:4px; border-bottom:1px solid #eee;">699～600点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１１級</td><td style="padding:4px; border-bottom:1px solid #eee;">599～500点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１２級</td><td style="padding:4px; border-bottom:1px solid #eee;">499～400点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１３級</td><td style="padding:4px; border-bottom:1px solid #eee;">399～300点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１４級</td><td style="padding:4px; border-bottom:1px solid #eee;">299～200点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">１５級</td><td style="padding:4px; border-bottom:1px solid #eee;">199～100点</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">初心者</td><td style="padding:4px; border-bottom:1px solid #eee;">99～0点</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-outline" onclick="closeRatingModal()" style="margin:0;">閉じる</button>
+    </div>
+</div>
+
+<div id="rating-calc-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:20px; border-radius:10px; text-align:center; max-width:90%; width:320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); display:flex; flex-direction:column; max-height:80vh;">
+        <h3 style="margin-top:0; color:#333; border-bottom:2px solid #e4f0c5; padding-bottom:5px;">レーティング計算表</h3>
+        <p style="font-size:0.85rem; margin-top:5px; margin-bottom:10px; color:#555; text-align:left;">
+            対局前の「R点差」による上位者の変動値です。<br>※下位者勝ちの場合はこのプラスマイナスが逆になります。
+        </p>
+        <div style="overflow-y:auto; margin-bottom:15px; flex:1;">
+            <table style="width:100%; border-collapse:collapse; font-size:0.85rem; text-align:center;">
+                <thead>
+                    <tr>
+                        <th style="background:#f5f5f5; position:sticky; top:0; padding:6px; border-bottom:1px solid #ccc;">R点差</th>
+                        <th style="background:#f5f5f5; position:sticky; top:0; padding:6px; border-bottom:1px solid #ccc; color:#d32f2f;">上位者勝ち</th>
+                        <th style="background:#f5f5f5; position:sticky; top:0; padding:6px; border-bottom:1px solid #ccc; color:#1976d2;">上位者負け</th>
+                    </tr>
+                </thead>
+                <tbody>
+                   <tbody>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">0 ～ 12</td><td style="padding:4px; border-bottom:1px solid #eee;">+16</td><td style="padding:4px; border-bottom:1px solid #eee;">-16</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">13 ～ 37</td><td style="padding:4px; border-bottom:1px solid #eee;">+15</td><td style="padding:4px; border-bottom:1px solid #eee;">-17</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">38 ～ 62</td><td style="padding:4px; border-bottom:1px solid #eee;">+14</td><td style="padding:4px; border-bottom:1px solid #eee;">-18</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">63 ～ 87</td><td style="padding:4px; border-bottom:1px solid #eee;">+13</td><td style="padding:4px; border-bottom:1px solid #eee;">-19</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">88 ～ 112</td><td style="padding:4px; border-bottom:1px solid #eee;">+12</td><td style="padding:4px; border-bottom:1px solid #eee;">-20</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">113 ～ 137</td><td style="padding:4px; border-bottom:1px solid #eee;">+11</td><td style="padding:4px; border-bottom:1px solid #eee;">-21</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">138 ～ 162</td><td style="padding:4px; border-bottom:1px solid #eee;">+10</td><td style="padding:4px; border-bottom:1px solid #eee;">-22</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">163 ～ 187</td><td style="padding:4px; border-bottom:1px solid #eee;">+9</td><td style="padding:4px; border-bottom:1px solid #eee;">-23</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">188 ～ 212</td><td style="padding:4px; border-bottom:1px solid #eee;">+8</td><td style="padding:4px; border-bottom:1px solid #eee;">-24</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">213 ～ 237</td><td style="padding:4px; border-bottom:1px solid #eee;">+7</td><td style="padding:4px; border-bottom:1px solid #eee;">-25</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">238 ～ 262</td><td style="padding:4px; border-bottom:1px solid #eee;">+6</td><td style="padding:4px; border-bottom:1px solid #eee;">-26</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">263 ～ 287</td><td style="padding:4px; border-bottom:1px solid #eee;">+5</td><td style="padding:4px; border-bottom:1px solid #eee;">-27</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">288 ～ 312</td><td style="padding:4px; border-bottom:1px solid #eee;">+4</td><td style="padding:4px; border-bottom:1px solid #eee;">-28</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">313 ～ 337</td><td style="padding:4px; border-bottom:1px solid #eee;">+3</td><td style="padding:4px; border-bottom:1px solid #eee;">-29</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">338 ～ 362</td><td style="padding:4px; border-bottom:1px solid #eee;">+2</td><td style="padding:4px; border-bottom:1px solid #eee;">-30</td></tr>
+                    <tr><td style="padding:4px; border-bottom:1px solid #eee;">363 ～</td><td style="padding:4px; border-bottom:1px solid #eee;">+1</td><td style="padding:4px; border-bottom:1px solid #eee;">-31</td></tr>
+                </tbody>
+            </table>
+        </div>
+        <button class="btn btn-outline" onclick="closeRatingCalcModal()" style="margin:0;">閉じる</button>
+    </div>
+</div>
+
+<div id="draw-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:2000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:10px; text-align:center; max-width:90%; width:320px; box-shadow: 0 4px 15px rgba(0,0,0,0.3);">
+        <h3 style="margin-top:0; color:#d32f2f;">引き分け提案</h3>
+        <div style="margin:20px 0; font-weight:bold; font-size:1.1rem; line-height:1.5;">相手から引き分けの提案がありました。<br>合意しますか？</div>
+        <div style="display:flex; gap:10px; justify-content:center;">
+            <button class="btn btn-primary" onclick="answerDraw(true)">合意する</button>
+            <button class="btn btn-gray" onclick="answerDraw(false)">拒否する</button>
+        </div>
+    </div>
+</div>
+
+<div id="promote-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.2); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:15px 20px; border-radius:8px; text-align:center; box-shadow: 0 4px 15px rgba(0,0,0,0.4); width: 240px; border: 2px solid #4CAF50;">
+        <h3 style="margin-top:0; margin-bottom:15px; color:#333; font-size:1.3rem;">成りますか？</h3>
+        <div style="display:flex; gap:15px; justify-content:center;">
+            <button class="btn btn-danger" id="btn-promote-yes" style="margin:0; padding:10px 0; width:45%; font-size:1.1rem;">成る</button>
+            <button class="btn btn-gray" id="btn-promote-no" style="margin:0; padding:10px 0; width:45%; font-size:1.1rem;">成らず</button>
+        </div>
+    </div>
+</div>
+
+<div id="game-end-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:3000; align-items:center; justify-content:center;">
+    <div style="background:white; padding:25px; border-radius:10px; text-align:center; max-width:90%; width:300px; box-shadow: 0 4px 15px rgba(0,0,0,0.4); border: 2px solid #4CAF50;">
+        <h3 id="game-end-title" style="margin-top:0; color:#d32f2f; font-size:1.3rem; border-bottom:2px solid #eee; padding-bottom:10px;">対局終了</h3>
+        <div id="game-end-msg" style="margin:20px 0; font-weight:bold; font-size:1.1rem; line-height:1.6; color:#333;"></div>
+        <button class="btn btn-primary" onclick="document.getElementById('game-end-modal').style.display='none';" style="width:100%; margin-top:10px;">確認</button>
+    </div>
+</div>
+
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js";
     import { getDatabase, ref, onValue, set, get, push, onDisconnect, remove, update, query, orderByChild, limitToLast } 
@@ -618,7 +947,7 @@
     function getPieceImgSrc(p){ if(!PIECE_IMG_MAP[p])return null; return IMG_BASE_URL+PIECE_IMG_MAP[p]+IMG_EXT; }
     const ADMIN_PASSWORD = "yonago81"; 
 
-    // 駒の動きルール（ここが無いと動きません）
+    // 駒の動きルール
     const PIECE_RULES = {
         '歩': { type: 0, moves: [{r:-1,c:0}], promoteTo: 'と' },
         '香': { type: 1, moves: [{r:-1,c:0}], promoteTo: '杏' },
@@ -637,8 +966,18 @@
         '竜': { type: 1, moves: [{r:-1,c:0},{r:1,c:0},{r:0,c:-1},{r:0,c:1}], extra: [{r:-1,c:-1},{r:-1,c:1},{r:1,c:-1},{r:1,c:1}], original: '飛' }
     };
 
-    const RANK_RULES = [{ min: 3100, name: '九段' }, { min: 2900, name: '八段' }, { min: 2700, name: '七段' }, { min: 2500, name: '六段' }, { min: 2300, name: '五段' }, { min: 2100, name: '四段' }, { min: 0, name: '三段' }];
-    function getRankName(r) { if(r==null)return '三段'; for(let i of RANK_RULES){if(r>=i.min)return i.name;} return '三段'; }
+    const RANK_RULES = [
+        { min: 3100, name: '九段' }, { min: 2900, name: '八段' }, { min: 2700, name: '七段' },
+        { min: 2500, name: '六段' }, { min: 2300, name: '五段' }, { min: 2100, name: '四段' },
+        { min: 1900, name: '三段' }, { min: 1700, name: '二段' }, { min: 1600, name: '初段' },
+        { min: 1500, name: '１級' }, { min: 1400, name: '２級' }, { min: 1300, name: '３級' },
+        { min: 1200, name: '４級' }, { min: 1100, name: '５級' }, { min: 1000, name: '６級' },
+        { min: 900,  name: '７級' }, { min: 800,  name: '８級' }, { min: 700,  name: '９級' },
+        { min: 600,  name: '１０級'},{ min: 500,  name: '１１級'},{ min: 400,  name: '１２級'},
+        { min: 300,  name: '１３級'},{ min: 200,  name: '１４級'},{ min: 100,  name: '１５級'},
+        { min: 0,    name: '初心者'}
+    ];
+    function getRankName(r) { if(r==null)return '初心者'; for(let i of RANK_RULES){if(r>=i.min)return i.name;} return '初心者'; }
     const RATING_TABLE = [{limit:12,normal:16,upset:16},{limit:37,normal:15,upset:17},{limit:62,normal:14,upset:18},{limit:87,normal:13,upset:19},{limit:112,normal:12,upset:20},{limit:137,normal:11,upset:21},{limit:162,normal:10,upset:22},{limit:187,normal:9,upset:23},{limit:212,normal:8,upset:24},{limit:237,normal:7,upset:25},{limit:262,normal:6,upset:26},{limit:287,normal:5,upset:27},{limit:312,normal:4,upset:28},{limit:337,normal:3,upset:29},{limit:362,normal:2,upset:30},{limit:9999,normal:1,upset:31}];
 
     const firebaseConfig = {
@@ -654,13 +993,14 @@
     const db = getDatabase(app, firebaseConfig.databaseURL);
     const auth = getAuth(app);
 
-
     let currentUser = null, userData = null, isRegisterMode = false;
     const DUMMY_DOMAIN = "@yonago.local";
     let currentRoomId = null, invitedRoomId = null, myRole = null, myUserType = 'player', currentRule = "normal";
     let gameUnsubscribe = null, connectionUnsubscribe = null, roomsUnsubscribe = null, myConnectionRef = null, sessionMonitorRef = null;
     let prevLastMoveTime = 0; const BYOYOMI_TIME = 30;
     let replayData = null, replayIndex = 0;
+    let hasDeposited = false;         
+    let isLocalProcessingEnd = false; 
 
     window.trackOnlineStatus = function() {
         const connectedRef = ref(db, ".info/connected"); const presenceRef = ref(db, "online_users");
@@ -674,6 +1014,10 @@
         document.getElementById('auth-title').innerText = isRegisterMode ? "新規会員登録" : "ログインして始める";
         document.getElementById('auth-action-btn').innerText = isRegisterMode ? "登録して始める" : "ログイン";
         document.getElementById('auth-region-group').style.display = isRegisterMode ? "block" : "none";
+
+        const rankGroup = document.getElementById('auth-rank-group');
+        if (rankGroup) rankGroup.style.display = isRegisterMode ? "block" : "none";
+
         document.getElementById('auth-toggle-text').innerText = isRegisterMode ? "すでにIDをお持ちの方はこちら（ログイン）" : "初めての方はこちら（新規登録）";
     };
 
@@ -681,14 +1025,27 @@
         const userId = document.getElementById('auth-userid').value.trim();
         const pass = document.getElementById('auth-password').value;
         if(!userId || !pass) { alert("ユーザー名とパスワードを入力してください"); return; }
-        if (!/^[a-zA-Z0-9]+$/.test(userId)) { alert("ユーザー名は半角英数字のみです"); return; }
+        if (userId.length > 20) { alert("ユーザー名は20文字以内で入力してください"); return; }
+        if (!/^[a-zA-Z0-9.\-]+$/.test(userId)) { alert("ユーザー名は半角英数字、ハイフン(-)、ドット(.)のみ使用可能です"); return; }
+        
         const email = userId + DUMMY_DOMAIN;
+        
         if(isRegisterMode) {
             const region = document.getElementById('auth-region').value.trim();
+            const initialRating = parseInt(document.getElementById('auth-initial-rank').value);
+
             if(!region) { alert("地域を入力してください"); return; }
             createUserWithEmailAndPassword(auth, email, pass).then((cred) => {
                 updateProfile(cred.user, { displayName: userId }).then(() => {
-                    set(ref(db, 'users/' + cred.user.uid), { name: userId, displayId: userId, region: region, rating: 1500, maxRating: 1500, wins: 0, losses: 0 });
+                    set(ref(db, 'users/' + cred.user.uid), { 
+                        name: userId, 
+                        displayId: userId, 
+                        region: region, 
+                        rating: initialRating, 
+                        maxRating: initialRating, 
+                        wins: 0, 
+                        losses: 0 
+                    });
                 });
             }).catch((e) => alert("登録エラー: " + e.message));
         } else {
@@ -701,18 +1058,24 @@
     window.goToMemberList = function() {
         showScreen('member-list-screen');
         const listBody = document.getElementById('member-list-body');
+        const titleEl = document.getElementById('member-list-title'); 
+        
         listBody.innerHTML = "<tr><td colspan='5'>読み込み中...</td></tr>";
+        titleEl.innerText = "会員名簿（読み込み中...）"; 
 
         get(ref(db, 'users')).then((snap) => {
             const users = snap.val();
             listBody.innerHTML = "";
             
             if(!users) {
+                titleEl.innerText = "会員名簿（0人）"; 
                 listBody.innerHTML = "<tr><td colspan='5'>会員がいません</td></tr>";
                 return;
             }
 
             const userArray = Object.values(users).sort((a, b) => (b.rating || 1500) - (a.rating || 1500));
+            
+            titleEl.innerText = `会員名簿（${userArray.length}人）`;
 
             userArray.forEach(u => {
                 const tr = document.createElement('tr');
@@ -727,13 +1090,13 @@
                     <td>${rank}</td>
                     <td style="color:#d32f2f; font-weight:bold;">${rate}</td>
                     <td style="font-size:0.8rem;">${region}</td>
-                    <td style="font-size:0.8rem;">${wins}勝<br>${losses}敗</td>
+                    <td style="font-size:0.8rem; white-space:nowrap;">${wins}勝 ${losses}敗</td>
                 `;
                 listBody.appendChild(tr);
             });
         }).catch(err => {
-            // エラー対策も追加しておきます
             console.error(err);
+            titleEl.innerText = "会員名簿";
             listBody.innerHTML = "<tr><td colspan='5'>読み込みエラー（ログインしてください）</td></tr>";
         });
     };
@@ -765,11 +1128,22 @@
         }
     });
 
-       function checkLoginStatusAndLoad(user) {
+   function checkLoginStatusAndLoad(user) {
+        const params = new URLSearchParams(window.location.search);
+        const page = params.get('page');
+
+        if (page === 'members') {
+            goToMemberList();
+            return; // ここで処理を止める（多重ログインエラーを出さない）
+        } else if (page === 'search') {
+            goToSearch();
+            return; // ここで処理を止める
+        }
+
         const onlineRef = ref(db, 'users/' + user.uid + '/isOnline');
         get(onlineRef).then((snap) => {
             if(snap.val() === true) {
-                showScreen('error-screen');
+                showScreen('error-screen'); // 別のタブで対局室などを開いている場合はエラー
             } else {
                 set(onlineRef, true); onDisconnect(onlineRef).set(false);
                 initSessionMonitor(user.uid);
@@ -784,26 +1158,21 @@
                     }
                     updateDashDisplay();
 
-                    // ▼▼▼ 画面遷移の判定 ▼▼▼
-                    const params = new URLSearchParams(window.location.search);
-                    const page = params.get('page');
                     const invitedRoomId = params.get('room');
-
-                    if (page === 'members') {
-                        goToMemberList();
-                    } else if (page === 'search') {
-                        goToSearch();
-                    } else if (invitedRoomId) {
+                    if (invitedRoomId) {
                         goToLobby();
                     } else {
                         // 通常ログイン時はマイページへ
-                        showScreen('dashboard-screen');
+                        processUnprocessedGames().then(() => {
+                            updateDashDisplay();
+                            showScreen('dashboard-screen');
+                        });
                     }
                 });
             }
         });
     }
-    
+
     function initSessionMonitor(uid) {
         const sessionId = Date.now().toString() + Math.random().toString().slice(2);
         const userSessionRef = ref(db, 'users/' + uid + '/sessionId');
@@ -842,11 +1211,54 @@
             Object.keys(users).forEach(uid => {
                 const u = users[uid];
                 const tr = document.createElement('tr');
-                tr.innerHTML = `<td>${u.name}<br><small>${u.region||""}</small></td><td>${Math.round(u.rating||1500)}</td><td><button class="btn btn-warning btn-small" onclick="openEditUser('${uid}')">編</button><button class="btn btn-danger btn-small" onclick="deleteUser('${uid}','${u.name}')">削</button></td>`;
+                tr.innerHTML = `<td>${u.name}<br><small>${u.region||""}</small></td><td>${Math.round(u.rating||1500)}</td><td><button class="btn btn-warning btn-small" onclick="openEditUser('${uid}')">編集</button><button class="btn btn-danger btn-small" onclick="deleteUser('${uid}','${u.name}')">削除</button></td>`;
                 listEl.appendChild(tr);
             });
         });
+
+        onValue(ref(db, 'matches'), (snap) => {
+            const roomListEl = document.getElementById('admin-room-list'); 
+            roomListEl.innerHTML = "";
+            const matches = snap.val();
+            
+            if(!matches) {
+                roomListEl.innerHTML = "<tr><td colspan='3'>現在対局室はありません</td></tr>";
+                return;
+            }
+
+            const now = Date.now();
+            Object.keys(matches).forEach(roomId => {
+                const match = matches[roomId];
+                const settings = match.settings || {};
+                const hostName = settings.hostName || "不明";
+                const createdAt = settings.createdAt || now;
+                
+                // 経過時間を計算（分）
+                const elapsedMin = Math.floor((now - createdAt) / 60000); 
+                
+                let status = "<span style='color:#4CAF50;font-weight:bold;'>離席</span>";
+                if(match.isGameStarted) status = "<span style='color:#d32f2f;font-weight:bold;'>対局中</span>";
+                if(match.isGameOver) status = "<span style='color:#757575;'>終局済</span>";
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-size:0.85rem;">ID: ${roomId}<br><strong style="font-size:1rem;">${hostName}</strong></td>
+                    <td style="font-size:0.85rem;">${status}<br><span style="color:#666;">${elapsedMin}分経過</span></td>
+                    <td><button class="btn btn-danger btn-small" onclick="adminDeleteRoom('${roomId}')">削除</button></td>
+                `;
+                roomListEl.appendChild(tr);
+            });
+        });
     }
+
+    //管理画面からの強制削除機能
+    window.adminDeleteRoom = function(roomId) {
+        if(confirm(`部屋ID: ${roomId} を強制削除しますか？\n※もし対局中だった場合、強制終了になります。`)) {
+            remove(ref(db, 'matches/' + roomId)).then(() => {
+                alert("部屋を削除しました。");
+            });
+        }
+    };
     window.openEditUser = function(uid) {
         get(ref(db, 'users/' + uid)).then((snap) => {
             const u = snap.val();
@@ -869,198 +1281,565 @@
     }
     window.closeEditModal = function() { document.getElementById('admin-edit-modal').style.display = 'none'; };
     window.deleteUser = function(uid, name) { if(confirm(`「${name}」を削除しますか？`)) remove(ref(db, 'users/' + uid)).then(() => alert("削除しました")); };
+    window.resetOnlineCount = function() {
+        if(confirm("閲覧数（オンライン接続データ）を強制的に0にリセットしますか？\n※実際の接続者も一時的に切断扱いになります。")) {
+            remove(ref(db, 'online_users')).then(() => {
+                alert("閲覧数をリセットしました。");
+            }).catch((error) => {
+                alert("エラーが発生しました: " + error.message);
+            });
+        }
+    };
 
     // --- ロビー ---
     window.goToLobby = function() { showScreen('lobby-screen'); startRoomListListener(); if(invitedRoomId) { document.getElementById('create-room-area').style.display='none'; document.getElementById('room-list-container').style.display='none'; document.getElementById('invite-area').style.display='block'; document.getElementById('invite-text').innerText="部屋ID: "+invitedRoomId; } else { document.getElementById('create-room-area').style.display='block'; document.getElementById('room-list-container').style.display='block'; document.getElementById('invite-area').style.display='none'; } };
-    window.backToDashboard = function() { if(roomsUnsubscribe) roomsUnsubscribe(); if(currentUser) get(ref(db, 'users/'+currentUser.uid)).then(s=>{userData=s.val(); updateDashDisplay(); showScreen('dashboard-screen');}); };
+
+    window.backToDashboard = function() { 
+        if(roomsUnsubscribe) roomsUnsubscribe(); 
+        if(currentUser) {
+            get(ref(db, 'users/'+currentUser.uid)).then(s=>{
+                userData=s.val(); 
+                // 精算処理を待ってからマイページを表示
+                processUnprocessedGames().then(() => {
+                    updateDashDisplay(); 
+                    showScreen('dashboard-screen');
+                });
+            }); 
+        }
+    };
     
     function startRoomListListener() {
-        if(roomsUnsubscribe) roomsUnsubscribe();
+        // 1. 既存のリスナーがあれば解除（多重起動防止）
+        if(roomsUnsubscribe) {
+            roomsUnsubscribe();
+            roomsUnsubscribe = null;
+        }
+
+        // 2. 新しいリスナーを登録
         roomsUnsubscribe = onValue(ref(db, 'matches'), (snap) => {
-            const listBody = document.getElementById('room-list-body'); listBody.innerHTML = "";
-            const data = snap.val(); if(!data) { listBody.innerHTML = "<tr><td colspan='5'>現在、対局室はありません</td></tr>"; return; }
+            const listBody = document.getElementById('room-list-body'); 
             
-            const rooms = Object.keys(data).map(k => ({key:k, val:data[k]})).sort((a,b)=>(b.val.settings?.createdAt||0)-(a.val.settings?.createdAt||0));
+            listBody.innerHTML = ""; 
+            
+            const data = snap.val(); 
+            if(!data) { 
+                listBody.innerHTML = "<tr><td colspan='5'>現在、対局者がいません</td></tr>"; 
+                return; 
+            }
+            
+            // データを配列化してソート
+            const rooms = Object.keys(data)
+                .map(k => ({key:k, val:data[k]}))
+                .sort((a,b)=>(b.val.settings?.createdAt||0)-(a.val.settings?.createdAt||0));
+            
             let visibleCount = 0;
 
             rooms.forEach(item => {
                 const conns = item.val.connections || {};
-                if(Object.keys(conns).length === 0) return;
-                
-                visibleCount++;
+                const settings = item.val.settings || {}; 
                 const players = Object.values(conns).filter(c => c.type !== 'spectator');
-                const rule = item.val.settings?.timeRule || 'normal';
                 const isGameOver = item.val.isGameOver || false;
-
-                // バッジとボタンの決定
-                let statusBadge = (rule==='normal') ? "<span class='status-badge badge-waiting'>待15分</span>" : "<span class='status-badge badge-waiting'>待早</span>";
-                let actionBtn = `<button class="btn btn-secondary btn-small" onclick="listJoin('${item.key}','player')">挑戦</button><button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
                 
-                if (isGameOver) {
-                    statusBadge = "<span class='status-badge badge-finished'>終局</span>";
-                    actionBtn = `<button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
-                } else if(players.length >= 2) {
-                    statusBadge = "<span class='status-badge badge-playing'>対局中</span>";
-                    actionBtn = `<button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
-                }              
+                // ルール取得
+                const rule = settings.timeRule || 'normal';
+
+                let statusBadge, rankStr, nameStr, rateStr, actionBtn;
+
+                // --- 表示ロジック ---
+                if (players.length === 0) {
+                    // 【ケース1】 募集中（入室者0人）
+                    if (!settings.createdAt) return; // 不正データは無視
+
+                // 終局済みなのに誰もいない部屋は表示しない（スキップ）
+                    if (isGameOver) return; 
+
+                    visibleCount++;
+                    
+                    // バッジ表示（以前の形式に戻す）
+                    statusBadge = (rule === 'normal') 
+                        ? "<span class='status-badge badge-waiting'>待15分</span>" 
+                        : "<span class='status-badge badge-waiting'>待早</span>";
+                    
+                    // ホスト情報を表示
+                    rankStr = getRankName(settings.hostRating);
+                    nameStr = settings.hostName || "匿名";
+                    rateStr = Math.round(settings.hostRating || 1500);
+                    
+                    // 自分が立てた部屋かどうかでボタンを変える（※IDで確実に判定）
+                    const isMyRoom = (settings.hostUid && currentUser && settings.hostUid === currentUser.uid);
+                    
+                    if(isMyRoom) {
+                         // 自分の募集ならボタンを非表示にし「対局待ち...」のテキストにする
+                         actionBtn = `<span style="color:#e65100; font-weight:bold; font-size:0.9rem;">対局待ち</span>`;
+                    } else {
+                         // 他人の募集なら挑戦・観戦ボタンを表示
+                         actionBtn = `<button class="btn btn-secondary btn-small" onclick="listJoin('${item.key}','player', '${settings.hostName || "読み込み中"}', ${settings.hostRating || 1500})">挑戦</button><button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
+                    }
+
+                } else {
+                    // 【ケース2】 対局中または終局（誰かいる）
+                    visibleCount++;
+                    
+                    if (isGameOver) {
+                        statusBadge = "<span class='status-badge badge-finished'>終局</span>";
+                        actionBtn = `<button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
+                    } else {
+                        statusBadge = "<span class='status-badge badge-playing'>対局中</span>";
+                        actionBtn = `<button class="btn btn-gray btn-small" onclick="listJoin('${item.key}','spectator')">観戦</button>`;
+                    }
+
+                    // プレイヤーリストから表示
+                    rankStr = players.map(p => getRankName(p.rating)).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">');
+                    nameStr = players.map(p => p.name).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">');
+                    rateStr = players.map(p => Math.round(p.rating||1500)).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">');
+                }
                 
-                const rankStr = (players.length>0) ? players.map(p => getRankName(p.rating)).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">') : "";
-
-                const nameStr = (players.length>0) ? players.map(p => p.name).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">') : "<span style='color:#999'>なし</span>";
-                const rateStr = (players.length>0) ? players.map(p => Math.round(p.rating||1500)).join('<hr style="margin:2px 0;border:0;border-top:1px solid #ddd;">') : "";
-
+                // 行を追加
                 const tr = document.createElement('tr');
                 tr.innerHTML = `<td>${statusBadge}</td><td>${rankStr}</td><td>${nameStr}</td><td>${rateStr}</td><td>${actionBtn}</td>`;                 
-                           
                 listBody.appendChild(tr);
             });
-            if(visibleCount === 0) listBody.innerHTML = "<tr><td colspan='5'>現在、対局室はありません</td></tr>";
+
+            // 1件も表示対象がなかった場合
+            if(visibleCount === 0) {
+                listBody.innerHTML = "<tr><td colspan='5'>現在、対局はありません</td></tr>";
+            }
         });
     }
 
-    window.listJoin = function(id, type) { enterRoom(id, type); };
-    window.joinInvitedRoom = function(type) { enterRoom(invitedRoomId, type); };
-    window.createRoom = function() {
-        const id = Math.floor(100000+Math.random()*900000).toString();
-        const rule = document.getElementById('time-rule').value;
-        set(ref(db, 'matches/'+id+'/settings'), { hostIsSente: Math.random()<0.5, timeRule: rule, createdAt: Date.now() }).then(()=>enterRoom(id, 'player'));
+    let challengeWaitUnsubscribe = null;
+    let challengingTimer = null;
+    let currentChallengeReqRef = null;
+
+    window.listJoin = function(id, type, hostName, hostRating) {
+        if(type === 'spectator') {
+            enterRoom(id, type);
+            return;
+        }
+
+        if(!confirm(`${hostName} さんに対局を申し込みますか？`)) return;
+
+        const reqRef = ref(db, 'matches/' + id + '/request');
+        currentChallengeReqRef = reqRef;
+        
+        const myReq = {
+            uid: currentUser.uid,
+            name: userData.name,
+            rating: userData.rating,
+            status: 'pending' 
+        };
+
+        set(reqRef, myReq).then(() => {
+            document.getElementById('challenging-msg').innerHTML = `<span style="font-size:1.3rem;">${hostName}</span> さん<br><span style="color:#666; font-size:0.9rem;">R ${Math.round(hostRating)}</span>`;
+            document.getElementById('challenging-modal').style.display = 'flex';
+            
+            let timeLeft = 30;
+            document.getElementById('challenging-countdown').innerText = timeLeft;
+            
+            if(challengingTimer) clearInterval(challengingTimer);
+            challengingTimer = setInterval(() => {
+                timeLeft--;
+                document.getElementById('challenging-countdown').innerText = timeLeft;
+                if(timeLeft <= 0) clearInterval(challengingTimer);
+            }, 1000);
+
+            // 承認/拒否の監視
+            if(challengeWaitUnsubscribe) challengeWaitUnsubscribe();
+            challengeWaitUnsubscribe = onValue(reqRef, (snap) => {
+                const val = snap.val();
+                if(!val) return; 
+
+                if(val.status === 'accepted') {
+                    if(challengeWaitUnsubscribe) challengeWaitUnsubscribe();
+                    if(challengingTimer) clearInterval(challengingTimer);
+                    document.getElementById('challenging-modal').style.display = 'none';
+                    remove(reqRef); 
+                    playKaishiSound();
+                    enterRoom(id, 'player'); 
+                } else if(val.status === 'rejected') {
+                    if(challengeWaitUnsubscribe) challengeWaitUnsubscribe();
+                    if(challengingTimer) clearInterval(challengingTimer);
+                    document.getElementById('challenging-modal').style.display = 'none';
+                    remove(reqRef); 
+                    alert("ホストにより入室が拒否されました。");
+                }
+            });
+            
+            // タイムアウト処理（30秒）
+            setTimeout(() => {
+                 get(reqRef).then(s => {
+                     if(s.exists() && s.val().status === 'pending' && s.val().uid === currentUser.uid) {
+                         remove(reqRef);
+                         if(challengeWaitUnsubscribe) challengeWaitUnsubscribe();
+                         if(challengingTimer) clearInterval(challengingTimer);
+                         document.getElementById('challenging-modal').style.display = 'none';
+                         alert("応答がありませんでした");
+                     }
+                 });
+            }, 30000);
+        });
     };
 
-    function enterRoom(id, type) {
+    window.cancelChallenge = function() {
+        if(currentChallengeReqRef) remove(currentChallengeReqRef);
+        if(challengeWaitUnsubscribe) challengeWaitUnsubscribe();
+        if(challengingTimer) clearInterval(challengingTimer);
+        document.getElementById('challenging-modal').style.display = 'none';
+    };
+
+    window.joinInvitedRoom = function(type) { enterRoom(invitedRoomId, type); };
+
+    window.createRoom = function() {
+        if (!currentUser) return; // 念のため未ログインを弾く
+
+        // 1. データベース上の現在の部屋をすべて取得してチェックする
+        get(ref(db, 'matches')).then((snap) => {
+            const matches = snap.val();
+            let myWaitingRoomCount = 0;
+            
+            if (matches) {
+                Object.keys(matches).forEach(roomId => {
+                    const match = matches[roomId];
+                    const settings = match.settings || {};
+                    const isGameOver = match.isGameOver || false;
+                    const conns = match.connections || {};
+                    const players = Object.values(conns).filter(c => c.type !== 'spectator');
+                    
+                    // 自分がホストで、まだ誰も入室していない（待機中）の部屋をカウント
+                    if (settings.hostUid === currentUser.uid && players.length === 0 && !isGameOver) {
+                        myWaitingRoomCount++;
+                    }
+                });
+            }
+            
+            // 2. 制限に引っかかったら作成をブロック
+            if (myWaitingRoomCount >= 1) {
+                alert("すでに対局待ちです。");
+                return; // ここで処理を止める
+            }
+
+            // 3. 制限クリアなら通常通り部屋を作成する
+            const id = Math.floor(100000 + Math.random() * 900000).toString();
+            const rule = document.getElementById('time-rule').value;
+            
+            set(ref(db, 'matches/' + id + '/settings'), { 
+                hostIsSente: Math.random() < 0.5, 
+                timeRule: rule, 
+                createdAt: Date.now(),
+                hostName: userData.name,
+                hostRating: userData.rating,
+                hostUid: currentUser.uid
+            }).then(() => {
+                currentRoomId = id;
+                myUserType = 'player';
+                document.getElementById('create-room-area').style.display = 'none';
+                document.getElementById('hosting-wait-area').style.display = 'block';
+                waitForChallengeInLobby(id);
+            });
+        });
+    };
+
+    window.cancelRoom = function() {
+        if(!currentRoomId) return;
+        
+        if(confirm("対局待ちを取り消しますか？")) {
+            // データベースから部屋を削除
+            remove(ref(db, 'matches/' + currentRoomId));
+            
+            // 監視を停止
+            if(window.requestUnsubscribe) window.requestUnsubscribe();
+            currentRoomId = null;
+
+            // UIを元に戻す
+            document.getElementById('create-room-area').style.display = 'block';
+            document.getElementById('hosting-wait-area').style.display = 'none';
+        }
+    };
+
+    function waitForChallengeInLobby(id) {
+        const reqRef = ref(db, 'matches/' + id + '/request');
+        
+        if(window.requestUnsubscribe) window.requestUnsubscribe();
+
+        window.requestUnsubscribe = onValue(reqRef, (snap) => {
+            const req = snap.val();
+            // 自分以外からのpendingリクエストが来たらダイアログ表示
+            if(req && req.status === 'pending' && req.uid !== currentUser.uid) {
+                document.getElementById('challenge-msg').innerHTML = 
+                    `<span style="font-size:1.4rem; font-weight:bold;">${req.name}</span> さん<br>` +
+                    `<span style="color:#d32f2f;">R ${Math.round(req.rating||1500)}</span><br>` +
+                    `より対局の申し込みです。`;
+                
+                document.getElementById('challenge-modal').style.display = 'flex';
+                playChallengeSound(); 
+            }
+        });
+    }
+
+     function enterRoom(id, type) {
         if(roomsUnsubscribe) roomsUnsubscribe();
         myUserType = type; currentRoomId = id;
+        hasDeposited = false;          
+        isLocalProcessingEnd = false;  
         showScreen('game-wrapper');
         const controls = document.getElementById('controls');
-        // if(type==='spectator') controls.classList.add('disabled-controls'); else controls.classList.remove('disabled-controls');
         // 観戦者でも反転と退室はできるように
-        document.getElementById('btn-start').disabled = (type === 'spectator');
         document.getElementById('btn-resign').disabled = (type === 'spectator');
-        if(type==='spectator'){ document.getElementById('btn-start').style.opacity=0.5; document.getElementById('btn-resign').style.opacity=0.5; }
-        else { document.getElementById('btn-start').style.opacity=1; document.getElementById('btn-resign').style.opacity=1; }
+        if(type==='spectator'){ document.getElementById('btn-resign').style.opacity=0.5; }
+        else { document.getElementById('btn-resign').style.opacity=1; }
 
         const url = window.location.pathname + '?room=' + id;
         window.history.pushState({path:url}, '', url);
-        startGameSync();
+        get(ref(db, 'matches/' + id + '/settings')).then(s => {
+            window.currentRoomSettings = s.val();
+            startGameSync();
+        });
     }
+
     window.exitRoom = function() {
         if(gameUnsubscribe) gameUnsubscribe();
         if(connectionUnsubscribe) connectionUnsubscribe();
+        if(window.requestUnsubscribe) window.requestUnsubscribe();
+        if (currentRoomId && gameState && gameState.isGameOver) {
+            get(ref(db, 'matches/' + currentRoomId + '/settings')).then(snap => {
+                const settings = snap.val();
+                // 自分がこの部屋のオーナー(hostUid)であれば削除を実行
+                if (settings && settings.hostUid === currentUser.uid) {
+                    remove(ref(db, 'matches/' + currentRoomId));
+                }
+            });
+        }
+
         if(myConnectionRef) remove(myConnectionRef);
         currentRoomId=null; myRole=null; invitedRoomId=null;
+        window.currentRoomSettings = null; 
         window.history.pushState({},'',window.location.pathname);
-        goToLobby();
+        
+        if (currentUser) {
+            processUnprocessedGames().then(() => {
+                goToLobby();
+            });
+        } else {
+            goToLobby();
+        }
     };
+
     window.copyInviteUrl = function() { navigator.clipboard.writeText(window.location.origin + window.location.pathname + "?room=" + currentRoomId).then(()=>alert("URLコピー完了")); };
 
     function startGameSync() {
-        if(!currentRoomId) return;
+        if(!currentRoomId) return;      
         const conRef = ref(db, 'matches/'+currentRoomId+'/connections');
-        myConnectionRef = push(conRef);
-        set(myConnectionRef, { name: userData.name, uid: currentUser.uid, rating: userData.rating, type: myUserType, joinedAt: Date.now() });
-        onDisconnect(myConnectionRef).remove();
 
-        connectionUnsubscribe = onValue(conRef, (snap) => {
-            const players=[]; let myIdx=-1, cnt=0;
-            const allConns = [];
-            snap.forEach(c => { if(c.val()) { allConns.push(c.val()); if(c.key===myConnectionRef.key) myIdx=cnt; if(c.val().type!=='spectator') cnt++; }});
-            determineMyRole(myIdx, allConns);
+        let disconnectTimer = null;
+        
+        // 1. 最初に入室データを登録
+        myConnectionRef = push(conRef);
+        const myEntryData = { 
+            name: userData.name, 
+            uid: currentUser.uid, 
+            rating: userData.rating,
+            wins: userData.wins || 0,
+            losses: userData.losses || 0,
+            maxRating: userData.maxRating || userData.rating, 
+            type: myUserType, 
+            joinedAt: Date.now() 
+        };
+        set(myConnectionRef, myEntryData);
+        onDisconnect(myConnectionRef).remove();
+        
+        // 2. 挑戦リクエストの監視
+        const reqRef = ref(db, 'matches/' + currentRoomId + '/request');
+        if(window.requestUnsubscribe) window.requestUnsubscribe();
+
+        window.requestUnsubscribe = onValue(reqRef, (snap) => {
+            const req = snap.val();
+            if(myUserType !== 'spectator' && req && req.status === 'pending') {
+                if(req.uid === currentUser.uid) return;
+                document.getElementById('challenge-msg').innerHTML = 
+                    `<span style="font-size:1.4rem; font-weight:bold;">${req.name}</span> さん<br>` +
+                    `<span style="color:#d32f2f;">R ${Math.round(req.rating||1500)}</span><br>` +
+                    `より対局の申し込みです。`;
+                document.getElementById('challenge-modal').style.display = 'flex';
+                playChallengeSound(); 
+            }
         });
 
+        // 3. 接続者リストの監視
+        connectionUnsubscribe = onValue(conRef, (snap) => {
+            const players=[]; 
+            let myIdx=-1, cnt=0;
+            const allConns = [];
+            let amIInList = false; // リストに自分がいるかチェック用
+
+            snap.forEach(c => { 
+                const val = c.val();
+                if(val) { 
+                    allConns.push(val); 
+                    // 自分がリストに存在するか確認
+                    if(val.uid === currentUser.uid) amIInList = true;
+
+                    if(c.key===myConnectionRef.key) myIdx=cnt; 
+                    if(val.type!=='spectator') cnt++; 
+                }
+            });
+
+            // 自動復帰ロジック
+            // 自分がプレイヤーなのに、リストから消えてしまっている場合
+            if (myUserType !== 'spectator' && !amIInList && currentUser) {
+                console.warn("接続データ消失を検知。自動復帰します。");
+                // データを再登録（キーが変わると手番順が変わるリスクはあるが、操作不能よりはマシ）
+                // ※本来は前のキーを維持したいが、pushし直して最後尾に付く
+                myConnectionRef = push(conRef);
+                set(myConnectionRef, myEntryData);
+                onDisconnect(myConnectionRef).remove();
+                return; // 今回の処理はスキップして、次の更新を待つ
+            }
+
+           determineMyRole(myIdx, allConns);
+
+            if (gameState && gameState.isGameStarted && !gameState.isGameOver && myUserType !== 'spectator') {
+                const activePlayers = allConns.filter(c => c.type !== 'spectator');
+                
+                if (activePlayers.length < 2) {
+                    if (!disconnectTimer) {
+                        const st = document.getElementById('status');
+                        if (st) st.innerText = "相手の通信復帰を待機中..."; // 画面にお知らせ
+                        
+                        disconnectTimer = setTimeout(() => {
+                            finishGame(myRole, "接続切れ"); // 10秒待って戻らなければ切断負け
+                        }, 10000); 
+                    }
+                } else {
+                    if (disconnectTimer) {
+                        clearTimeout(disconnectTimer);
+                        disconnectTimer = null;
+                        draw(); // ステータスの文字を通常の「先手番/後手番」に戻す
+                    }
+                }
+            }
+        });
+
+        // 4. 盤面データの監視
         gameUnsubscribe = onValue(ref(db, 'matches/'+currentRoomId), (snap) => {
             const val = snap.val();
-            if(val && val.board) { gameState = val; if(!gameState.handSente) gameState.handSente={}; if(!gameState.handGote) gameState.handGote={}; draw(); }
+            if(val && val.board) { 
+                const oldGameOver = gameState.isGameOver;
+                gameState = val; 
+                
+                if (gameState.moveCount >= 3 && !hasDeposited && myUserType !== 'spectator') {
+                    hasDeposited = true;
+                    writeDeposit();
+                }
+
+                if (val.drawOffer && val.drawOffer !== currentUser.uid && myUserType !== 'spectator' && !gameState.isGameOver) {
+                    document.getElementById('draw-modal').style.display = 'flex';
+                } else {
+                    const drawModal = document.getElementById('draw-modal');
+                    if(drawModal) drawModal.style.display = 'none';
+                }
+
+                if (!oldGameOver && gameState.isGameOver && myUserType !== 'spectator') {
+                    if (!isLocalProcessingEnd) {
+                        finishGame(gameState.winner, gameState.endReason);
+                    }
+                }
+
+                if(!gameState.handSente) gameState.handSente={}; 
+                if(!gameState.handGote) gameState.handGote={}; 
+                draw(); 
+            }
             else if(!val || !val.board) initGameData();
         });
+      }
+
+   function writeDeposit() {
+        if (!currentUser || myUserType === 'spectator') return;
+        const opD = window.cachedOpponent;
+        if (!opD || !userData) return;
+
+        const depositData = {
+            result: "loss",            // 仮の負け
+            reason: "切断切れ", // 仮の理由
+            opponentUid: opD.uid,
+            opponentName: opD.name,
+            opponentRate: opD.rating || 1500,
+            ownRateBefore: userData.rating || 1500,
+            timestamp: Date.now(),
+            turn: (myRole === SENTE) ? "先手" : "後手",
+            archiveId: currentRoomId,
+            isDeposit: true
+        };
+        set(ref(db, `users/${currentUser.uid}/unprocessed_games/${currentRoomId}`), depositData);
     }
 
-    function determineMyRole(idx, allConns) {
-        get(ref(db, 'matches/'+currentRoomId+'/settings')).then(s => {
-            const set = s.val();
-            let hostIsSente = true; currentRule = 'normal';
-            if(set) { if(set.hostIsSente!==undefined) hostIsSente=set.hostIsSente; if(set.timeRule) currentRule=set.timeRule; }
-            
-            const ruleEl = document.getElementById('rule-display');
-            if(ruleEl) ruleEl.innerText = (currentRule==='blitz') ? "30秒将棋" : "持ち時間15分切れたら一手30秒";
-            
-            // プレイヤー（観戦者以外）を抽出
-            const players = allConns.filter(c => c.type !== 'spectator');
-            
-            // 名前とレートの表示更新処理
-            let sName = "待機中...", gName = "待機中...";
-            let sRate = null, gRate = null;
+   function determineMyRole(idx, allConns) {
+        const set = window.currentRoomSettings;
+        if(!set) return;
 
-            if(players.length > 0) {
-                if(hostIsSente) {
-                    // ホストが先手の場合
-                    sName = players[0].name; sRate = players[0].rating;
-                    if(players.length > 1) { gName = players[1].name; gRate = players[1].rating; }
-                } else {
-                    // ホストが後手の場合
-                    gName = players[0].name; gRate = players[0].rating;
-                    if(players.length > 1) { sName = players[1].name; sRate = players[1].rating; }
-                }
+        let hostIsSente = (set.hostIsSente !== undefined) ? set.hostIsSente : true;
+        currentRule = set.timeRule || 'normal';
+        
+        const ruleEl = document.getElementById('rule-display');
+        if(ruleEl) ruleEl.innerText = (currentRule==='blitz') ? "持ち時間1分切れたら30秒" : "持ち時間15分切れたら一手30秒";
+        
+        const players = allConns.filter(c => c.type !== 'spectator');
+        
+        if (currentUser) {
+            const opp = players.find(p => p.uid !== currentUser.uid);
+            if (opp) window.cachedOpponent = opp;
+        }
+
+        let hostPlayer = null;
+        let guestPlayer = null;
+
+        if (set.hostUid) {
+            hostPlayer = players.find(p => p.uid === set.hostUid);
+            guestPlayer = players.find(p => p.uid !== set.hostUid);
+        } else {
+            hostPlayer = players[0];
+            guestPlayer = players[1];
+        }
+
+        let sName = "待機中...", gName = "待機中...";
+        let sRate = null, gRate = null;
+
+        if (hostIsSente) {
+            if(hostPlayer) { sName = hostPlayer.name; sRate = hostPlayer.rating; }
+            if(guestPlayer) { gName = guestPlayer.name; gRate = guestPlayer.rating; }
+        } else {
+            if(hostPlayer) { gName = hostPlayer.name; gRate = hostPlayer.rating; }
+            if(guestPlayer) { sName = guestPlayer.name; sRate = guestPlayer.rating; }
+        }
+        
+        const ps = document.getElementById('player-sente'); if(ps) ps.innerText = sName;
+        const pg = document.getElementById('player-gote'); if(pg) pg.innerText = gName;
+        const fmt = (n, r) => (r !== null && r !== undefined) ? `${n} (${Math.round(r)})` : n;
+        const ns = document.getElementById('name-display-sente'); if(ns) ns.innerText = "▲" + fmt(sName, sRate);
+        const ng = document.getElementById('name-display-gote'); if(ng) ng.innerText = "△" + fmt(gName, gRate);
+
+        myRole = null;
+        if (myUserType !== 'spectator' && currentUser) {
+            const isMeHost = (set.hostUid) ? (currentUser.uid === set.hostUid) : (idx === 0);
+            if (isMeHost) myRole = hostIsSente ? SENTE : GOTE;
+            else myRole = hostIsSente ? GOTE : SENTE;
+        }
+
+        const roleEl = document.getElementById('my-role-display');
+        if(roleEl) {
+            if(myRole) roleEl.innerText = (myRole===SENTE?"先手":"後手");
+            else if(myUserType!=='spectator') roleEl.innerText = "待機中";
+            else roleEl.innerText = "観戦中";
+        }
+
+        const layoutEl = document.getElementById('game-layout-container');
+        if(layoutEl) {
+            if(myRole === GOTE) {
+                if(!layoutEl.classList.contains('gote-view')) layoutEl.classList.add('gote-view');
+            } else {
+                if(layoutEl.classList.contains('gote-view')) layoutEl.classList.remove('gote-view');
             }
-            
-            // 画面表示の更新
-            const ps = document.getElementById('player-sente'); if(ps) ps.innerText = sName;
-            const pg = document.getElementById('player-gote'); if(pg) pg.innerText = gName;
-
-            const fmt = (n, r) => (r !== null && r !== undefined) ? `${n} (${Math.round(r)})` : n;
-            
-            // 先手には「▲」、後手には「△」をつける
-            const ns = document.getElementById('name-display-sente'); 
-            if(ns) ns.innerText = "▲" + fmt(sName, sRate);
-            
-            const ng = document.getElementById('name-display-gote'); 
-            if(ng) ng.innerText = "△" + fmt(gName, gRate);
-
-            /* ▼▼▼ 修正箇所：UIDを使って確実に自分の役割を判定 ▼▼▼ */
-            myRole = null;
-            if (myUserType !== 'spectator' && currentUser) {
-                // プレイヤーリストの中で、自分のUIDを持つものを探す
-                const myIndex = players.findIndex(p => p.uid === currentUser.uid);
-                
-                if (myIndex !== -1) {
-                    // 自分が見つかった場合
-                    if (myIndex === 0) {
-                        // 1人目（ホスト）
-                        myRole = hostIsSente ? SENTE : GOTE;
-                    } else if (myIndex === 1) {
-                        // 2人目（ゲスト）
-                        myRole = hostIsSente ? GOTE : SENTE;
-                    }
-                }
-            }
-
-            // 自分の役割判定
-            const roleEl = document.getElementById('my-role-display');
-            if(myUserType==='spectator') { myRole=null; if(roleEl) roleEl.innerText="観戦中"; }
-            else if(idx===0) myRole = hostIsSente ? SENTE : GOTE;
-            else if(idx===1) myRole = hostIsSente ? GOTE : SENTE;
-            else myRole=null;
-            
-            if(roleEl) {
-                if(myRole) roleEl.innerText = (myRole===SENTE?"先手":"後手");
-                else if(myUserType!=='spectator') roleEl.innerText = "待機中";
-            }
-
-            /* ▼▼▼ 自動反転ロジック（ここを確実に実行） ▼▼▼ */
-            const layoutEl = document.getElementById('game-layout-container');
-            if(layoutEl) {
-                if(myRole === GOTE) {
-                    if(!layoutEl.classList.contains('gote-view')) {
-                        layoutEl.classList.add('gote-view');
-                    }
-                } else {
-                    // 先手、または観戦者などは反転を解除
-                    if(layoutEl.classList.contains('gote-view')) {
-                        layoutEl.classList.remove('gote-view');
-                    }
-                }
-            }
-            
-            updateTimerDisplay();
-        });
+        }
+        updateTimerDisplay();
     }
 
     const SENTE=2, GOTE=1;
@@ -1069,7 +1848,7 @@
     
     let gameState = {};
     function initGameData() {
-        const t = (currentRule==='blitz') ? 0 : 900;
+        const t = (currentRule==='blitz') ? 60 : 900;
         gameState = { board: initialBoard, owner: initialOwner, handSente: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, handGote: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, turn: SENTE, lastMove: null, timeSente: t, timeGote: t, lastMoveTimestamp: Date.now(), isGameOver: false, isGameStarted: false };
         draw();
     }
@@ -1093,12 +1872,21 @@
             }
         }
         drawHand('hand-sente-list', gameState.handSente, SENTE); drawHand('hand-gote-list', gameState.handGote, GOTE);
+        
         const st=document.getElementById('status');
-        if(gameState.isGameOver) st.innerHTML=`<span class="status-win">${gameState.winner===SENTE?"先手":"後手"} 勝ち</span>`;
-        else if(!gameState.isGameStarted) st.innerText="待機中..."; else st.innerText=(gameState.turn===SENTE?"先手番":"後手番");
+        if (replayData) {
+            st.innerHTML = "&nbsp;"; // 透明な空白（スペース）を入れて高さを固定し、ズレを防ぐ
+        } else {
+            if(gameState.isGameOver) st.innerHTML=`<span class="status-win">${gameState.winner===SENTE?"先手":"後手"} 勝ち</span>`;
+            else if(!gameState.isGameStarted) st.innerText="待機中..."; else st.innerText=(gameState.turn===SENTE?"先手番":"後手番");
+        }
         updateTimerDisplay();
-    }
 
+        // 対局中の手数をボックスに表示
+        const mc = document.getElementById('move-count-display');
+        if (mc) mc.innerText = gameState.moveCount || 0;
+    }
+    
     function drawHand(id, hand, owner) {
         const el=document.getElementById(id); el.innerHTML='';
         ['飛','角','金','銀','桂','香','歩'].forEach(p=>{
@@ -1111,19 +1899,43 @@
         });
     }
 
-    function playKomaSound() { if(audioCtx.state==='suspended') audioCtx.resume(); const t=audioCtx.currentTime, o=audioCtx.createOscillator(), g=audioCtx.createGain(); o.type='triangle'; o.frequency.setValueAtTime(150,t); o.frequency.exponentialRampToValueAtTime(0.01,t+0.05); g.gain.setValueAtTime(1,t); g.gain.exponentialRampToValueAtTime(0.01,t+0.05); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.05); }
-    const audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    const komaAudio = new Audio('./koma_sound.mp3'); 
+    const challengeAudio = new Audio('./tyousenn.mp3');
+    const kaishiAudio = new Audio('./kaishi.mp3');
+    const endAudio = new Audio('./end.mp3');
+
+    function playEndSound() { 
+        endAudio.currentTime = 0; 
+        endAudio.play().catch(e => console.log("終局音ブロック:", e)); 
+    }
+
+    function playKomaSound() { 
+        komaAudio.currentTime = 0; 
+        komaAudio.play().catch(e => console.log("駒音ブロック:", e));
+    }
+    
+    function playChallengeSound() { 
+        challengeAudio.currentTime = 0; 
+        challengeAudio.play().catch(e => console.log("挑戦音ブロック:", e));
+    }
+
+    function playKaishiSound() { 
+        kaishiAudio.currentTime = 0; 
+        kaishiAudio.play().catch(e => console.log("開始音ブロック:", e));
+    }
 
     function speakCount(txt) { if(!('speechSynthesis' in window))return; window.speechSynthesis.cancel(); const u=new SpeechSynthesisUtterance(txt); u.lang='ja-JP'; u.rate=1.2; window.speechSynthesis.speak(u); }
 
     function updateTimerDisplay() {
+
+        if (!currentRoomId && !replayData) return;
         const sEl=document.getElementById('timer-sente'), gEl=document.getElementById('timer-gote');
         const sFl=document.getElementById('byoyomi-flag-sente'), gFl=document.getElementById('byoyomi-flag-gote');
         
         if(!gameState.isGameStarted) {
             sEl.classList.remove('active','byoyomi-mode'); gEl.classList.remove('active','byoyomi-mode');
             sFl.style.visibility='hidden'; gFl.style.visibility='hidden';
-            if(currentRule === 'blitz') { sEl.innerText = "30秒"; gEl.innerText = "30秒"; } 
+            if(currentRule === 'blitz') { sEl.innerText = "01:00"; gEl.innerText = "01:00"; } 
             else { sEl.innerText = "15:00"; gEl.innerText = "15:00"; }
             return;
         }
@@ -1155,102 +1967,168 @@
         if(gameState.turn===SENTE) { if(isByo){sEl.innerText=rem>0?rem:"0"; sEl.classList.add('byoyomi-mode'); if(!tUp)checkVoice(rem);} else sEl.innerText=formatTime(dS); } else sEl.innerText=formatTime(gameState.timeSente);
         if(gameState.turn===GOTE) { if(isByo){gEl.innerText=rem>0?rem:"0"; gEl.classList.add('byoyomi-mode'); if(!tUp)checkVoice(rem);} else gEl.innerText=formatTime(dG); } else gEl.innerText=formatTime(gameState.timeGote);
 
-        if(tUp && !gameState.isGameOver) { speakCount("時間切れ"); finishGame((gameState.turn===SENTE?GOTE:SENTE), "時間切れ"); }
+        if(tUp && !gameState.isGameOver) { 
+            speakCount("時間切れ"); 
+            if (myUserType !== 'spectator') { // ←ここを追加
+                finishGame((gameState.turn===SENTE?GOTE:SENTE), "時間切れ"); 
+            }
+        }
     }
 
-    function checkVoice(s){ if(s<0||s===lastPlayedSecond)return; if(s===30||s===20||s<=10) speakCount(s<=10?s.toString():s+"秒"); lastPlayedSecond=s; }
+    function checkVoice(s){ if(s<0||s===lastPlayedSecond)return; if(s===20||s<=10) speakCount(s<=10?s.toString():s+"秒"); lastPlayedSecond=s; }
     function formatTime(s){ return `${Math.floor(s/60)}:${(s%60).toString().padStart(2,'0')}`; }
     if(timerInterval) clearInterval(timerInterval); timerInterval=setInterval(updateTimerDisplay, 200);
 
     window.resign=function(){ if(myUserType!=='spectator' && !gameState.isGameOver && confirm("投了しますか？")) finishGame((myRole===SENTE?GOTE:SENTE), "投了"); };
-    
-    function finishGame(winner, reason) {
-        const now=Date.now(), elap=Math.floor((now-gameState.lastMoveTimestamp)/1000);
-        if(gameState.turn===SENTE) { if(gameState.timeSente>elap) gameState.timeSente-=elap; else gameState.timeSente=0; }
-        else { if(gameState.timeGote>elap) gameState.timeGote-=elap; else gameState.timeGote=0; }
-        const currentMoves = gameState.moveCount || 0;
-        // 11手未満(10手以下) かつ 理由が「投了」「時間切れ」以外なら無効
-        if (currentMoves < 11 && reason !== "投了" && reason !== "時間切れ") {
-            gameState.isGameOver = true;
-            gameState.winner = null; // 勝者なし
-            gameState.endReason = "無効試合 (" + reason + ")";
-            save();
-            draw();
-            alert("規定手数（11手）未満で終了したため、無効試合とします。\n（レート・戦績は変動しません）");
-            return; // ここで処理を終了し、下のレート計算へ進ませない
-        }        
-        gameState.isGameOver=true; gameState.winner=winner; gameState.endReason=reason; save(); draw();
 
-        if(myUserType!=='spectator') {
-            get(ref(db, 'matches/'+currentRoomId+'/connections')).then(snap => {
-                const conns=snap.val(); let myD=null, opD=null;
-                Object.values(conns).forEach(c => { if(c.uid===currentUser.uid) myD=c; else if(c.type!=='spectator') opD=c; });
+    window.offerDraw = function() {
+        if(myUserType === 'spectator' || gameState.isGameOver) return;
+        if(confirm("相手に引き分けを提案しますか？")) {
+            update(ref(db, 'matches/' + currentRoomId), { drawOffer: currentUser.uid });
+        }
+    };
 
-              if(myD) {
-                    const myRecord = {
-                        date: Date.now(),
-                        opponent: opD ? opD.name : "不明",
-                        result: (myRole===winner) ? "WIN" : "LOSE",
-                        turn: (myRole===SENTE) ? "先手" : "後手",
-                        moves: gameState.history || []
-                    };
-                    push(ref(db, 'records/' + myD.uid), myRecord);
-                }
-
-                // 2. 相手の履歴保存（相手が接続中の場合のみ）
-                if(opD && myD) {
-                    const opRecord = {
-                        date: Date.now(),
-                        opponent: myD.name,
-                        result: (myRole===winner) ? "LOSE" : "WIN", // 勝敗を反転
-                        turn: (myRole===SENTE) ? "後手" : "先手", // 手番を反転
-                        moves: gameState.history || []
-                    };
-                    push(ref(db, 'records/' + opD.uid), opRecord);
-                }
-
-                if(!myD||!opD) return;
-
-                // ★追加：settings.isRated を確認して、レート対象外ならここで終了
-                get(ref(db, 'matches/'+currentRoomId+'/settings')).then(s2 => {
-                    const set2 = s2.val();
-                    const isRated = !(set2 && set2.isRated === false); // 未設定はレート対象(true)
-                
-                    if(!isRated){
-                        alert("この対局はレート対象外です（レート・戦績は変動しません）");
-                        return;
-                    }
-                
-                    // ▼ここから下は、元のレート計算処理をそのまま
-                    const win = (myRole===winner);
-                    const myR = myD.rating||1500, opR = opD.rating||1500;
-                    const diff = Math.abs(myR-opR);
-                    let entry = RATING_TABLE.find(r=>diff<=r.limit) || RATING_TABLE[RATING_TABLE.length-1];
-                    let pt = 0;
-                    if(win) pt = (myR>=opR) ? entry.normal : entry.upset;
-                    else pt = (opR>=myR) ? -entry.normal : -entry.upset;
-                
-                    const newR = myR + pt;
-                    const curM = userData.maxRating||1500;
-                    const newM = (newR>curM) ? newR : curM;
-                
-                    update(ref(db, 'users/'+currentUser.uid), {
-                        rating:newR, maxRating:newM,
-                        wins:(userData.wins||0)+(win?1:0),
-                        losses:(userData.losses||0)+(win?0:1)
-                    }).then(()=>{
-                        userData.rating=newR; userData.maxRating=newM;
-                        userData.wins+=(win?1:0); userData.losses+=(win?0:1);
-                        alert(`レート: ${myR}->${newR} (${pt>=0?"+":""}${pt})`);
-                    });
-                });
+    window.answerDraw = function(isAccept) {
+        if(!currentRoomId) return;
+        if(isAccept) {
+            update(ref(db, 'matches/' + currentRoomId), { drawOffer: null }).then(() => {
+                finishGame(null, "引き分け");
             });
+        } else {
+            update(ref(db, 'matches/' + currentRoomId), { drawOffer: null });
+        }
+        document.getElementById('draw-modal').style.display = 'none';
+    };
+
+    async function finishGame(winner, reason) {
+        if (isLocalProcessingEnd) return;
+        isLocalProcessingEnd = true; 
+
+        const currentMoves = gameState.moveCount || 0;
+        
+        if (reason === "合意による引き分け" || (currentMoves < 3 && reason !== "投了" && reason !== "時間切れ")) {
+            gameState.isGameOver = true; gameState.winner = null; 
+            gameState.endReason = (reason === "合意による引き分け") ? "引き分け" : "無効試合 (" + reason + ")";
+            if (window.currentRoomSettings && currentUser.uid === window.currentRoomSettings.hostUid) save();
+            draw();
+            
+        // 引き分け・無効試合の時は、あらかじめ置いたペナルティ（デポジット）を取り消す
+            if (hasDeposited && currentUser) {
+                remove(ref(db, `users/${currentUser.uid}/unprocessed_games/${currentRoomId}`));
+            }
+        playEndSound();    
+        showGameEndModal("対局終了", reason === "合意による引き分け" ? "両者の合意により引き分けとなりました。<br><span style='font-size:0.9rem; color:#666;'>（レート変動なし）</span>" : "規定手数未満のため、<br>無効試合とします。");
+            return; 
+        }            
+
+        gameState.isGameOver = true; 
+        gameState.winner = winner; 
+        gameState.endReason = reason;
+
+        // 対局室のデータに「終了」を書き込む（誰が書いてもOK）
+        save(); draw();
+
+        // 観戦者以外なら、自分のデポジットを「本当の勝敗と棋譜」で上書きする
+        if(myUserType !== 'spectator' && currentMoves >= 3) {
+        // bot対局（isRated=false）の場合は、JS側のレート処理・棋譜保存を行わない
+            if (window.currentRoomSettings && window.currentRoomSettings.isRated === false) {
+                console.log("bot game detected: skip JS rating/archive save");
+                return;
+            }
+
+            if (myRole === winner || (!winner && window.currentRoomSettings && currentUser.uid === window.currentRoomSettings.hostUid)) {
+                set(ref(db, `archives/${currentRoomId}`), {
+                    moves: gameState.history || [],
+                    timestamp: Date.now()
+                });
+            }
+
+            const opD = window.cachedOpponent;
+            if (opD && currentUser && userData) {
+                const win = (myRole === winner);
+                const finalData = {
+                    result: win ? "WIN" : "LOSE",
+                    reason: reason,
+                    opponentUid: opD.uid,
+                    opponentName: opD.name,
+                    opponentRate: opD.rating || 1500,
+                    ownRateBefore: userData.rating || 1500,
+                    timestamp: Date.now(),
+                    turn: (myRole === SENTE) ? "先手" : "後手",
+                    moveCount: currentMoves,
+                    archiveId: currentRoomId,
+                    isDeposit: false
+                };
+
+                await set(ref(db, `users/${currentUser.uid}/unprocessed_games/${currentRoomId}`), finalData);
+            }
+        }
+
+        // 終了アラート
+
+        playEndSound();
+
+        if (reason === "投了") {
+            showGameEndModal("終局", myRole === winner ? "相手が投了しました。<br><span style='color:#d32f2f; font-size:1.3rem;'>あなたの勝ちです！</span>" : "投了しました。<br><span style='color:#1976d2; font-size:1.3rem;'>あなたの負けです。</span>");
+        } else if (reason === "時間切れ") {
+             showGameEndModal("時間切れ", myRole === winner ? "相手が時間切れになりました。<br><span style='color:#d32f2f; font-size:1.3rem;'>あなたの勝ちです！</span>" : "時間切れです。<br><span style='color:#1976d2; font-size:1.3rem;'>あなたの負けです。</span>");
+        } 
+        else if (reason === "接続切れ") {
+            showGameEndModal("接続切れ", "相手の通信が切断されました。<br><span style='color:#d32f2f; font-size:1.3rem;'>あなたの勝ちです！</span>");
+        }
+        else if (reason === "王手放置") {
+            showGameEndModal("終局", myRole === winner ? "相手の玉を討ち取りました。<br><span style='color:#d32f2f; font-size:1.3rem;'>あなたの勝ちです！</span>" : "玉を討ち取られました。<br><span style='color:#1976d2; font-size:1.3rem;'>あなたの負けです。</span>");
         }
     }
 
-    window.startGame=function(){ if(myUserType!=='spectator' && confirm("開始しますか？")){ if(audioCtx.state==='suspended')audioCtx.resume(); const t=(currentRule==='blitz')?0:900; gameState={board:initialBoard,owner:initialOwner,handSente:{'歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0},handGote:{'歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0},turn:SENTE,lastMove:null,timeSente:t,timeGote:t,lastMoveTimestamp:Date.now(),isGameOver:false,isGameStarted:true,moveCount: 0, history: [] }; save(); draw(); }};
+        window.answerChallenge = function(isAccept) {
+        if(!currentRoomId) return;
+        const reqRef = ref(db, 'matches/' + currentRoomId + '/request');
+        
+        if(isAccept) {
+            // ルール（持ち時間）を取得
+            get(ref(db, 'matches/' + currentRoomId + '/settings')).then(s => {
+                const settings = s.val();
+                const rule = settings ? (settings.timeRule || 'normal') : 'normal';
+                const t = (rule === 'blitz') ? 60 : 900;
+                
+                // 承認ステータスに変更
+                update(reqRef, { status: 'accepted' }).then(() => {
+                    document.getElementById('challenge-modal').style.display = 'none';
+                    document.getElementById('create-room-area').style.display = 'block';
+                    document.getElementById('hosting-wait-area').style.display = 'none';
+           
+                    const newGameState = {
+                        board: initialBoard,
+                        owner: initialOwner,
+                        handSente: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 },
+                        handGote: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 },
+                        turn: SENTE,
+                        lastMove: null,
+                        timeSente: t,
+                        timeGote: t,
+                        lastMoveTimestamp: Date.now(), 
+                        isGameOver: false,
+                        isGameStarted: true, 
+                        moveCount: 0,
+                        history: []
+                    };
+                    
+                    // 盤面を作ってからホストも入室
+                    update(ref(db, 'matches/' + currentRoomId), newGameState).then(() => {
+                        playKaishiSound();
+                        enterRoom(currentRoomId, 'player'); 
+                    });
+                });
+            });
+        } else {
+            // 拒否：ステータスをrejectedに変更して、ロビーで待機継続
+            update(reqRef, { status: 'rejected' });
+            document.getElementById('challenge-modal').style.display = 'none';
+        }
+    };
 
-    function onBoardClick(r,c){ 
+    async function onBoardClick(r,c){ 
         if(replayData) return; // 再生中は操作不可
         if(myUserType==='spectator'||gameState.isGameOver||!gameState.isGameStarted||myRole!==gameState.turn)return; 
         const p=gameState.board[r][c], o=gameState.owner[r][c]; 
@@ -1266,7 +2144,13 @@
                         let must=false; 
                         if(np==='歩'||np==='香'){if((gameState.turn===SENTE&&r===0)||(gameState.turn===GOTE&&r===8))must=true;} 
                         else if(np==='桂'){if((gameState.turn===SENTE&&r<=1)||(gameState.turn===GOTE&&r>=7))must=true;} 
-                        if(must||confirm("成りますか？")) { np=rule.promoteTo; promoted = true; } 
+                        
+                        if(must) {
+                            np=rule.promoteTo; promoted = true;
+                        } else {
+                            const isPromote = await confirmPromote(); // オリジナル画面で待機
+                            if(isPromote) { np=rule.promoteTo; promoted = true; }
+                        }
                     } 
                     movePiece(selected.r,selected.c,r,c,np,promoted); 
                 } 
@@ -1287,7 +2171,10 @@
     function movePiece(fr,fc,tr,tc,np,promoted){ 
         const tp=gameState.board[tr][tc]; 
         const originalPiece = gameState.board[fr][fc]; 
-        if(tp)addToHand(tp,gameState.turn); 
+        
+        // 王様以外なら持ち駒に加える
+        if(tp && tp !== '王' && tp !== '玉') addToHand(tp,gameState.turn); 
+        
         gameState.board[tr][tc]=np; 
         gameState.owner[tr][tc]=gameState.turn; 
         gameState.board[fr][fc]=''; 
@@ -1295,6 +2182,29 @@
         
         // 履歴作成
         const moveData = { type: 'move', from: {r:fr, c:fc}, to: {r:tr, c:tc}, piece: originalPiece, promote: promoted, capture: tp };
+        
+        // 王を取った場合は、手番を交代「させずに」即終了する
+        if (tp === '王' || tp === '玉') {
+            // 盤面の描画更新と履歴追加だけを自力で行う
+            const now = Date.now();
+            const elap = Math.floor((now - gameState.lastMoveTimestamp) / 1000);
+            moveData.time = elap;
+            if(!gameState.history) gameState.history = [];
+            gameState.history.push(moveData);
+            
+            gameState.moveCount = (gameState.moveCount || 0) + 1; 
+            gameState.lastMove = {r:tr, c:tc}; 
+            gameState.lastMoveTimestamp = now; 
+            
+            save(); 
+            draw(); 
+            
+            // 勝敗判定（自分が勝ち）
+            finishGame(gameState.turn, "王手放置"); 
+            return;
+        }
+
+        // 王以外を取った、または単なる移動の場合は通常通り手番を交代する
         finishTurn(tr,tc,moveData); 
     }
     
@@ -1308,8 +2218,7 @@
         finishTurn(r,c,moveData); 
     }
     
-    function addToHand(p,o){ let raw=PIECE_RULES[p].original||p; if(o===SENTE)gameState.handSente[raw]=(gameState.handSente[raw]||0)+1; else gameState.handGote[raw]=(gameState.handGote[raw]||0)+1; }
-    
+    function addToHand(p,o){ let raw=PIECE_RULES[p].original||p; if(o===SENTE)gameState.handSente[raw]=(gameState.handSente[raw]||0)+1; else gameState.handGote[raw]=(gameState.handGote[raw]||0)+1; }    
     function finishTurn(r,c, moveData){ 
         const now=Date.now(), elap=Math.floor((now-gameState.lastMoveTimestamp)/1000); 
         if(gameState.turn===SENTE){if(gameState.timeSente>elap)gameState.timeSente-=elap;else gameState.timeSente=0;} 
@@ -1361,138 +2270,506 @@
             }
 
             document.getElementById('search-result-area').style.display = 'block';
-            document.getElementById('search-result-name').innerText = `${targetData.name} さんの対局履歴`;
+            document.getElementById('search-result-name').innerText = `${targetData.name} さんの対局履歴（直近100局）`;
             // 名前も渡して、先手後手の表示を正しく行う
             loadKifuList(targetUid, targetData.name); 
         });
     };
 
-    // 1. 棋譜リスト読み込み（フォーマット変更版）
+    // 1. 棋譜リスト読み込み（完成版）
     function loadKifuList(targetUid, targetName) {
         if(!targetUid) return;
-        const kifuRef = query(ref(db, 'records/' + targetUid), limitToLast(20));
+        
+        // 直近100件を取得
+        const kifuRef = query(ref(db, 'records/' + targetUid), limitToLast(100));
+        
         get(kifuRef).then((snap) => {
             const body = document.getElementById('search-list-body');
             body.innerHTML = "";
-            if(!snap.exists()){ body.innerHTML = "<tr><td colspan='5'>対局履歴はありません</td></tr>"; return; }
             
-            const list = [];
-            snap.forEach(c => list.push({key:c.key, val:c.val()}));
-            list.reverse();
+            if(!snap.exists()){ 
+                body.innerHTML = "<tr><td colspan='5'>対局履歴はありません</td></tr>"; 
+                return; 
+            }
             
+            const list = [];           
+            snap.forEach(c => { 
+                list.push({key:c.key, val:c.val()}); 
+            });
+            
+            list.reverse();           
             list.forEach(item => {
                 const d = item.val;
                 const tr = document.createElement('tr');
                 
-                // 日時
-                const dateStr = new Date(d.date).toLocaleString('ja-JP', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
+                // 日付の処理
+                const dateObj = new Date(d.date);
+                const dateStr = isNaN(dateObj) ? "日付不明" : dateObj.toLocaleString('ja-JP', {year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit'});
                 
-                // 手数
-                const moveCount = (d.moves ? d.moves.length : 0);
+                const moveCount = d.moveCount !== undefined ? d.moveCount : (d.moves ? d.moves.length : "?");
+                const myRateStr = d.myRate !== undefined ? `(${d.myRate})` : "";
+                const opRateStr = d.opRate !== undefined ? `(${d.opRate})` : "";
 
-                // 先手・後手と勝敗の判定
-                let senteName = "", goteName = "";
-                
+                let senteStr = "", goteStr = "";
+                const targetNameStr = `${targetName}${myRateStr}`;
+                const opNameStr = `${d.opponent || "不明"}${opRateStr}`;
+
+               // 常に「先手」を左、「後手」を右にして勝敗マークをつける
                 if (d.turn === "先手") {
-                    // 検索した本人が「先手」
                     if (d.result === "WIN") {
-                        senteName = "○ " + targetName;
-                        goteName = (d.opponent || "不明") + " ●";
+                        senteStr = `○ ${targetNameStr}`;
+                        goteStr  = `${opNameStr} ●`;
                     } else {
-                        senteName = targetName + " ●";
-                        goteName = "○ " + (d.opponent || "不明");
+                        senteStr = `● ${targetNameStr}`;
+                        goteStr  = `${opNameStr} ○`;
                     }
                 } else {
-                    // 検索した本人が「後手」
+                    // 検索対象が「後手」の場合
                     if (d.result === "WIN") {
-                        goteName = "○ " + targetName;
-                        senteName = (d.opponent || "不明") + " ●";
+                        senteStr = `● ${opNameStr}`;
+                        goteStr  = `${targetNameStr} ○`;
                     } else {
-                        goteName = targetName + " ●";
-                        senteName = "○ " + (d.opponent || "不明");
+                        senteStr = `○ ${opNameStr}`;
+                        goteStr  = `${targetNameStr} ●`;
                     }
                 }
 
-                // セル生成
+                const archiveParam = d.archiveId ? `'${d.archiveId}'` : `null`;
+                const reasonStr = d.reason ? d.reason : "-"; // 過去のデータなど理由がない場合は「-」を表示
+
+                // tdの順番を「手数」「結果」の順に変更
                 tr.innerHTML = `
                     <td style="font-size:0.8rem;">${dateStr}</td>
-                    <td style="font-weight:bold; color:#000;">${senteName}</td>
-                    <td style="font-weight:bold; color:#000;">${goteName}</td>
+                    <td style="font-weight:bold; color:#000; padding:4px 10px;">
+                        <div style="display:flex; justify-content:space-between; align-items:center; width:100%;">
+                            <div style="flex:1; text-align:left;">${senteStr}</div>
+                            <div style="width:40px; text-align:center; color:#aaa; font-size:0.8rem;">VS</div>
+                            <div style="flex:1; text-align:right;">${goteStr}</div>
+                        </div>
+                    </td>
                     <td>${moveCount}手</td>
-                    <td><button class="btn btn-secondary btn-small" onclick="startReplay('${targetUid}', '${item.key}')">再生</button></td>
+                    <td style="font-size:0.8rem; color:#555;">${reasonStr}</td>
+                    <td><button class="btn btn-primary btn-small" onclick="startReplay('${targetUid}', '${item.key}', '${targetName}', ${archiveParam})">棋譜</button></td>
                 `;
                 body.appendChild(tr);
             });
         });
     }
+    
 
-    // 2. 再生開始
-    window.startReplay = function(uid, key) {
-        get(ref(db, 'records/' + uid + '/' + key)).then(snap => {
-            const data = snap.val();
-            if(!data) { alert("データが見つかりません"); return; }
-            
-            replayData = data.moves || [];
-            replayIndex = 0;
-            
-            gameState = { board: JSON.parse(JSON.stringify(initialBoard)), owner: JSON.parse(JSON.stringify(initialOwner)), handSente: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, handGote: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, turn: SENTE, isGameStarted: false, isGameOver: false, history: [] };
-            
-            showScreen('game-wrapper');
-            
-            document.getElementById('controls').style.display = 'none'; 
-            document.getElementById('replay-controls').style.display = 'flex'; 
-            
-            document.getElementById('rule-display').innerText = "[棋譜再生]";
-            
-            document.getElementById('name-display-sente').innerText = (data.turn==="先手") ? "▲本人" : "▲相手";
-            document.getElementById('name-display-gote').innerText = (data.turn==="後手") ? "△本人" : "△相手";
-
-            document.getElementById('game-layout-container').classList.remove('gote-view');
-
-            draw();
-        });
-    };
-
-    // 3. 次へボタン
-    window.replayNext = function() {
-        if(!replayData || replayIndex >= replayData.length) return;
-        const move = replayData[replayIndex];
-        if (move.type === 'move') {
-            const rule = PIECE_RULES[move.piece];
-            let np = move.piece; if (move.promote) np = rule.promoteTo;
-            if (move.capture) {
-                let raw = PIECE_RULES[move.capture].original || move.capture;
-                if (gameState.turn === SENTE) gameState.handSente[raw] = (gameState.handSente[raw]||0) + 1; else gameState.handGote[raw] = (gameState.handGote[raw]||0) + 1;
-            }
-            gameState.board[move.to.r][move.to.c] = np; gameState.owner[move.to.r][move.to.c] = gameState.turn;
-            gameState.board[move.from.r][move.from.c] = ''; gameState.owner[move.from.r][move.from.c] = 0; gameState.lastMove = move.to;
-        } else if (move.type === 'drop') {
-            gameState.board[move.to.r][move.to.c] = move.piece; gameState.owner[move.to.r][move.to.c] = gameState.turn;
-            if (gameState.turn === SENTE) gameState.handSente[move.piece]--; else gameState.handGote[move.piece]--;
-            gameState.lastMove = move.to;
+    // 2. 再生開始（新旧データ対応版）
+    window.startReplay = function(uid, key, ownerName, archiveId) {
+        if (!archiveId) {
+            // 古いデータの場合（重い棋譜が含まれている場合）
+            get(ref(db, 'records/' + uid + '/' + key)).then(snap => {
+                const data = snap.val();
+                if(!data || !data.moves) { alert("棋譜データが見つかりません"); return; }
+                playReplay(data.moves, ownerName, data.opponent, data.turn);
+            });
+        } else {
+            // 新しいデータの場合（archivesの書庫から棋譜を読み込む）
+            get(ref(db, 'archives/' + archiveId)).then(snap => {
+                const data = snap.val();
+                if(!data || !data.moves) { alert("棋譜本体が保存されていません（保存前にブラウザが閉じられた可能性があります）"); return; }
+                
+                get(ref(db, 'records/' + uid + '/' + key)).then(recSnap => {
+                    const recData = recSnap.val();
+                    playReplay(data.moves, ownerName, recData.opponent, recData.turn);
+                });
+            });
         }
-        gameState.turn = (gameState.turn === SENTE ? GOTE : SENTE); replayIndex++; draw();
     };
 
-    // 4. 戻るボタン
-    window.replayPrev = function() {
-        if(!replayData || replayIndex <= 0) return;
-        const targetIndex = replayIndex - 1;
-        gameState = { board: JSON.parse(JSON.stringify(initialBoard)), owner: JSON.parse(JSON.stringify(initialOwner)), handSente: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, handGote: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, turn: SENTE, isGameStarted: false, isGameOver: false, lastMove: null };
+        // 共通の再生画面描画処理
+   function playReplay(moves, ownerName, opponentName, ownerTurn) {
+        replayData = [];
+        if (moves) {
+            if (Array.isArray(moves)) {
+                replayData = moves.filter(m => m !== null); // 空の隙間を除去
+            } else {
+                // オブジェクト化されていた場合、順番通りに並べ直して配列にする
+                replayData = Object.keys(moves).sort((a,b) => parseInt(a)-parseInt(b)).map(k => moves[k]);
+            }
+        }
+        
         replayIndex = 0;
-        for(let i=0; i<targetIndex; i++) { replayNext(); }
-        draw();
+        
+        gameState = { board: JSON.parse(JSON.stringify(initialBoard)), owner: JSON.parse(JSON.stringify(initialOwner)), handSente: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, handGote: { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 }, turn: SENTE, isGameStarted: false, isGameOver: false, history: [] };
+        
+        showScreen('game-wrapper');
+        
+        document.getElementById('controls').style.display = 'none'; 
+        document.getElementById('replay-controls').style.display = 'flex'; 
+        document.querySelectorAll('.timer-container').forEach(el => el.style.visibility = 'hidden');
+        
+        let senteName = "---", goteName = "---";
+        if (ownerTurn === "先手") {
+            senteName = "▲ " + ownerName;
+            goteName = "△ " + (opponentName || "不明");
+        } else {
+            goteName = "△ " + ownerName;
+            senteName = "▲ " + (opponentName || "不明");
+        }
+        
+        document.getElementById('name-display-sente').innerText = senteName;
+        document.getElementById('name-display-gote').innerText = goteName;
+        document.getElementById('game-layout-container').classList.remove('gote-view');
+
+        draw(); // 一度描画
+        
+        const st = document.getElementById('status');
+        if (st) {
+            st.innerHTML = "&nbsp;";
+        }
+        document.getElementById('replay-move-count-display').innerText = "0";
+    }
+
+    window.replayNext = function() {
+        if (!replayData || replayIndex >= replayData.length) return;
+        replayIndex++;
+        applyMovesUpTo(replayIndex);
     };
 
-    // 5. 再生終了
+    window.replayPrev = function() {
+        if (!replayData || replayIndex <= 0) return;
+        replayIndex--;
+        applyMovesUpTo(replayIndex);
+    };
+
+    window.replayFirst = function() {
+        if (!replayData) return;
+        replayIndex = 0;
+        applyMovesUpTo(replayIndex);
+    };
+
+    window.replayLast = function() {
+        if (!replayData) return;
+        replayIndex = replayData.length;
+        applyMovesUpTo(replayIndex);
+    };
+
+    // 指定した手数まで一気に盤面を計算する機能
+    function applyMovesUpTo(index) {
+        try {
+            // 盤面を初期状態にリセット
+            gameState.board = JSON.parse(JSON.stringify(initialBoard));
+            gameState.owner = JSON.parse(JSON.stringify(initialOwner));
+            gameState.handSente = { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 };
+            gameState.handGote  = { '歩':0,'香':0,'桂':0,'銀':0,'金':0,'角':0,'飛':0 };
+            gameState.turn = SENTE;
+            gameState.lastMove = null;
+
+            // 0手目から index 手目まで指し手を適用
+            for (let i = 0; i < index; i++) {
+                const m = replayData[i];
+                if (!m) continue; // 安全装置
+                
+                const currentTurn = gameState.turn;
+                
+                if (m.type === 'move') {
+                    const p = m.piece; 
+                    // 成った場合は成り駒に変換
+                    const np = m.promote ? (PIECE_RULES[p].promoteTo || p) : p;
+                    
+                    // 駒を取った場合
+                    if (m.capture) {
+                        const raw = PIECE_RULES[m.capture].original || m.capture;
+                        if (currentTurn === SENTE) gameState.handSente[raw]++;
+                        else gameState.handGote[raw]++;
+                    }
+                    
+                    // 盤面の移動
+                    gameState.board[m.to.r][m.to.c] = np;
+                    gameState.owner[m.to.r][m.to.c] = currentTurn;
+                    gameState.board[m.from.r][m.from.c] = '';
+                    gameState.owner[m.from.r][m.from.c] = 0;
+                    gameState.lastMove = {r: m.to.r, c: m.to.c};
+                    
+                } else if (m.type === 'drop') {
+                    // 持ち駒を打った場合
+                    gameState.board[m.to.r][m.to.c] = m.piece;
+                    gameState.owner[m.to.r][m.to.c] = currentTurn;
+                    if (currentTurn === SENTE) gameState.handSente[m.piece]--;
+                    else gameState.handGote[m.piece]--;
+                    gameState.lastMove = {r: m.to.r, c: m.to.c};
+                }
+                
+                // 手番を交代
+                gameState.turn = (currentTurn === SENTE ? GOTE : SENTE);
+            }
+            
+            // 駒音を鳴らすためのダミー更新
+            gameState.lastMoveTimestamp = Date.now();
+            
+            draw(); // 再描画
+            
+            // 上部のステータス更新をやめ、下のボックスの数字だけを更新
+            document.getElementById('replay-move-count-display').innerText = index;
+        } catch (e) {
+            console.error("再生エラー:", e);
+            alert("棋譜の再生中にエラーが発生しました。");
+        }
+    }
+
+
+   // 5. 再生終了
     window.exitReplay = function() { 
         replayData = null; 
+        
+        document.getElementById('status').style.visibility = 'visible';
+        document.querySelectorAll('.timer-container').forEach(el => el.style.visibility = 'visible');
+        
         showScreen('search-screen'); 
     };
 
+    window.downloadKifu = function() {
+        if (!replayData || replayData.length === 0) {
+            alert("保存する棋譜データがありません。");
+            return;
+        }
+
+        // KIFヘッダー情報の構築
+        let kifuText = "# Kifu for Windows V7 V7.44 棋譜ファイル\n";
+        kifuText += "手合割：平手\n";
+        
+        // 画面の表示から名前を取得し、レート部分などを消して名前だけにする
+        let sName = document.getElementById('name-display-sente').innerText.replace(/^▲\s*/, '').trim().split(' ')[0];
+        let gName = document.getElementById('name-display-gote').innerText.replace(/^△\s*/, '').trim().split(' ')[0];
+
+        kifuText += `先手：${sName}\n`;
+        kifuText += `後手：${gName}\n`;
+        kifuText += "手数----指手---------消費時間--\n";
+
+        // 将棋特有の文字変換用辞書
+        const zenkakuCols = ["１","２","３","４","５","６","７","８","９"];
+        const kanjiRows = ["一","二","三","四","五","六","七","八","九"];
+        // 内部の駒名をKIF標準の名称に変換
+        const KIF_PIECE = { '歩':'歩', '香':'香', '桂':'桂', '銀':'銀', '金':'金', '角':'角', '飛':'飛', '王':'玉', '玉':'玉', 'と':'と', '杏':'成香', '圭':'成桂', '全':'成銀', '馬':'馬', '竜':'龍' };
+
+        let prevTo = null;
+        let totalTimeSente = 0;
+        let totalTimeGote = 0;
+
+        // 棋譜データの変換ループ
+        replayData.forEach((m, index) => {
+            if (!m) return;
+            const turnNum = index + 1;
+            let moveStr = "";
+
+            let pName = KIF_PIECE[m.piece] || m.piece;
+            
+            // 同一座標（同　歩 など）の判定
+            let isSame = prevTo && (prevTo.r === m.to.r && prevTo.c === m.to.c);
+            let coordStr = isSame ? "同　" : `${zenkakuCols[m.to.c]}${kanjiRows[m.to.r]}`;
+
+            if (m.type === 'move') {
+                const promoteStr = m.promote ? "成" : "";
+                const fromCol = m.from.c + 1;
+                const fromRow = m.from.r + 1;
+                moveStr = `${coordStr}${pName}${promoteStr}(${fromCol}${fromRow})`;
+            } else if (m.type === 'drop') {
+                moveStr = `${coordStr}${pName}打`;
+            }
+
+            prevTo = { r: m.to.r, c: m.to.c };
+
+            // 時間の計算（KIF標準の表記に合わせる）
+            let t = m.time || 0;
+            if (index % 2 === 0) totalTimeSente += t;
+            else totalTimeGote += t;
+            let totalT = (index % 2 === 0) ? totalTimeSente : totalTimeGote;
+
+            let m_min = Math.floor(t / 60);
+            let m_sec = t % 60;
+            let tot_h = Math.floor(totalT / 3600);
+            let tot_m = Math.floor((totalT % 3600) / 60);
+            let tot_s = totalT % 60;
+
+            let timeStr = `( ${m_min.toString().padStart(2, ' ')}:${m_sec.toString().padStart(2, '0')}/${tot_h.toString().padStart(2, '0')}:${tot_m.toString().padStart(2, '0')}:${tot_s.toString().padStart(2, '0')})`;
+
+            // 1行分のデータを結合
+            kifuText += `${turnNum.toString().padStart(4, ' ')} ${moveStr.padEnd(12, ' ')} ${timeStr}\n`;
+        });
+
+        // 最後に「投了」を記録（KIFの標準ルール）
+        kifuText += `${(replayData.length + 1).toString().padStart(4, ' ')} 投了\n`;
+
+        // ShogiGUIで文字化けしないようにするため、拡張子を「.kifu (UTF-8用)」にする
+        const blob = new Blob([kifuText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        
+        const now = new Date();
+        const yyyy = now.getFullYear();
+        const mm = String(now.getMonth() + 1).padStart(2, '0');
+        const dd = String(now.getDate()).padStart(2, '0');
+        const hh = String(now.getHours()).padStart(2, '0');
+        const min = String(now.getMinutes()).padStart(2, '0');
+        
+        // ファイル名を .kifu に設定
+        a.download = `kifu_${yyyy}${mm}${dd}_${hh}${min}.kifu`;
+        
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    async function processUnprocessedGames() {
+        if (!currentUser || !userData) return;
+        const unprocRef = ref(db, `users/${currentUser.uid}/unprocessed_games`);
+        const snap = await get(unprocRef);
+        
+        if (!snap.exists()) return; // 未処理がなければ何もしない
+
+        const games = snap.val();
+        let currentRating = userData.rating || 1500;
+        let currentMax = userData.maxRating || 1500;
+        let wins = userData.wins || 0;
+        let losses = userData.losses || 0;
+        let hasChanges = false;
+
+        for (const [gameId, game] of Object.entries(games)) {
+            const opRate = game.opponentRate || 1500;
+            const diff = Math.abs(currentRating - opRate);
+            let entry = RATING_TABLE.find(r => diff <= r.limit) || RATING_TABLE[RATING_TABLE.length - 1];
+
+            let pt = 0;
+            if (game.result === "WIN") {
+                pt = (currentRating >= opRate) ? entry.normal : entry.upset;
+                wins++;
+            } else { // LOSE または 切断負け(loss)
+                pt = (opRate >= currentRating) ? -entry.normal : -entry.upset;
+                losses++;
+            }
+
+            currentRating = Math.max(0, currentRating + pt);
+            currentMax = Math.max(currentRating, currentMax);
+
+            // 正式な「records（履歴）」に移動する
+            const recordData = {
+                date: game.timestamp,
+                opponent: game.opponentName || "不明",
+                myRate: Math.round(currentRating - pt), 
+                opRate: Math.round(opRate),
+                result: game.result === "WIN" ? "WIN" : "LOSE",
+                turn: game.turn || "不明",
+                moveCount: game.moveCount || "?",
+                reason: game.reason || "不明", // ← ★この1行を追加！
+                archiveId: game.archiveId || null
+            };
+            
+            // ※過去のデータとの互換性のため、万が一古い moves があれば引き継ぐ
+            if (game.moves) recordData.moves = game.moves;
+
+            const recordKey = push(ref(db, `records/${currentUser.uid}`)).key;
+            await set(ref(db, `records/${currentUser.uid}/${recordKey}`), recordData);
+            
+            // 処理が終わった証拠を削除
+            await remove(ref(db, `users/${currentUser.uid}/unprocessed_games/${gameId}`));
+            hasChanges = true;
+        }
+
+            // すべての精算が終わったら、自分のメインデータを更新
+        if (hasChanges) {
+            userData.rating = currentRating;
+            userData.maxRating = currentMax;
+            userData.wins = wins;
+            userData.losses = losses;
+            await update(ref(db, `users/${currentUser.uid}`), {
+                rating: currentRating,
+                maxRating: currentMax,
+                wins: wins,
+                losses: losses
+            });
+            alert("対局結果が更新されました！");
+        }
+    }
+
+
+          // 盤面デザイン変更機能（ボタン版）
+    window.changeBoardTheme = function(theme) {
+          // 引数がない場合（ページ読み込み時）は、保存されている設定を読み込む
+        if (!theme) {
+            theme = localStorage.getItem('komanication_board_theme') || 'default';
+        }
+        
+        const board = document.getElementById('board');
+        const komadais = document.querySelectorAll('.komadai');
+        
+        let bgStyle = '#deb06d'; // 標準の色
+        
+        // 保存した png 画像のファイル名に合わせて指定
+        if (theme === 'image1') bgStyle = 'url("./images/ban1.png") center/cover';
+        if (theme === 'image2') bgStyle = 'url("./images/ban2.png") center/cover';
+        
+        // 盤面と駒台の背景を一括変更
+        if (board) board.style.background = bgStyle;
+        komadais.forEach(k => k.style.background = bgStyle);
+        
+        // 選択をブラウザに記憶させる
+        localStorage.setItem('komanication_board_theme', theme);
+
+        // 選択されているボタンの色を青色（btn-secondary）にして目立たせる
+        ['default', 'image1', 'image2'].forEach(t => {
+            const btn = document.getElementById('btn-theme-' + t);
+            if(btn) {
+                if (t === theme) {
+                    btn.classList.remove('btn-outline');
+                    btn.classList.add('btn-secondary'); // 選択中
+                    btn.style.color = 'white';
+                } else {
+                    btn.classList.remove('btn-secondary');
+                    btn.classList.add('btn-outline');   // 非選択
+                    btn.style.color = '#555';
+                }
+            }
+        });
+    };
+
+    // ページ読み込み時に、以前保存した設定を復元する
+    setTimeout(() => {
+        window.changeBoardTheme();
+    }, 500);
+
+    // 早見表ポップアップ
+    window.openRatingModal = function() {
+        document.getElementById('rating-modal').style.display = 'flex';
+    };
+    window.closeRatingModal = function() {
+        document.getElementById('rating-modal').style.display = 'none';
+    };
+
+    window.openRatingCalcModal = function() {
+        document.getElementById('rating-calc-modal').style.display = 'flex';
+    };
+    window.closeRatingCalcModal = function() {
+        document.getElementById('rating-calc-modal').style.display = 'none';
+    };
+
+    function confirmPromote() {
+        return new Promise((resolve) => {
+            const modal = document.getElementById('promote-modal');
+            modal.style.display = 'flex';
+            
+            document.getElementById('btn-promote-yes').onclick = () => {
+                modal.style.display = 'none';
+                resolve(true); // 成る
+            };
+            document.getElementById('btn-promote-no').onclick = () => {
+                modal.style.display = 'none';
+                resolve(false); // 成らず
+            };
+        });
+    }
+
+     window.showGameEndModal = function(title, msg) {
+        document.getElementById('game-end-title').innerHTML = title;
+        document.getElementById('game-end-msg').innerHTML = msg;
+        document.getElementById('game-end-modal').style.display = 'flex';
+    };
 
 </script>
 </body>
-
 </html>
-
