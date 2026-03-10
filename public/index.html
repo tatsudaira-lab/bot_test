@@ -2030,9 +2030,16 @@
 
         // 観戦者以外なら、自分のデポジットを「本当の勝敗と棋譜」で上書きする
         if(myUserType !== 'spectator' && currentMoves >= 3) {
-        // bot対局（isRated=false）の場合は、JS側のレート処理・棋譜保存を行わない
+            // bot対局（isRated=false）の場合は、JS側のレート処理・棋譜保存を行わない
             if (window.currentRoomSettings && window.currentRoomSettings.isRated === false) {
                 console.log("bot game detected: skip JS rating/archive save");
+
+                // bot対局ではJS側で records化させないため、
+                // writeDeposit() が作った仮データを消してから抜ける
+                if (currentUser && currentRoomId) {
+                    await remove(ref(db, `users/${currentUser.uid}/unprocessed_games/${currentRoomId}`));
+                }
+
                 return;
             }
 
@@ -2773,3 +2780,4 @@
 </script>
 </body>
 </html>
+
