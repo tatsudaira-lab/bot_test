@@ -1106,6 +1106,18 @@
         });
     };
 
+    //将棋盤メーカー用関数
+    window.openBanmaker = function() {
+    if (!currentUser) {
+        alert("ログイン情報を確認できませんでした。");
+        return;
+    }
+
+    const uid = encodeURIComponent(currentUser.uid);
+    const name = encodeURIComponent((userData && userData.name) ? userData.name : (currentUser.displayName || ""));
+    window.location.href = `./banmaker.html?uid=${uid}&name=${name}`;
+};
+    
     window.logout = function() { 
         if(currentUser) set(ref(db, 'users/' + currentUser.uid + '/isOnline'), false).then(() => signOut(auth).then(() => location.reload()));
         else signOut(auth).then(() => location.reload());
@@ -2785,5 +2797,6 @@
 </script>
 </body>
 </html>
+
 
 
