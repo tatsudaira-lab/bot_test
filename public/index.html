@@ -1743,7 +1743,9 @@
                 const oldGameOver = gameState.isGameOver;
                 gameState = val; 
                 
-                if (gameState.moveCount >= 3 && !hasDeposited && myUserType !== 'spectator') {
+                const isBotGame = window.currentRoomSettings && window.currentRoomSettings.isRated === false;
+
+                if (gameState.moveCount >= 3 && !hasDeposited && myUserType !== 'spectator' && !isBotGame) {
                     hasDeposited = true;
                     writeDeposit();
                 }
